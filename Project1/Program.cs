@@ -12,6 +12,7 @@ namespace Project1
         {
             CheckersTable ct = new CheckersTable(8, 2);
             ct.printTable();
+
             Console.ReadLine();
         }
     }

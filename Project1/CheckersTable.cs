@@ -12,7 +12,7 @@ namespace Project1
         private int m_NumOfPlayers;
         private int m_NumOfMenFirstPlayer;
         private int m_NumOfMenSecondPlayer;
-        private CheckersMan[,] m_Table;
+        internal CheckerSquare[,] m_Table;
         internal bool m_GameOver;
         private string m_Turn;
 
@@ -38,30 +38,63 @@ namespace Project1
         private void initTable()
         {
             int numOfMen = calcNumOfMen();
-            int i;
-            m_Table = new CheckersMan[m_Size,m_Size];
+            m_Table = new CheckerSquare[m_Size,m_Size];
 
-            // put men on the upper side of the table
-            for (i = 0; i < m_Size/2; i++)
+            initUpperSide();
+            // space of 2 lines between the oponnents
+            for (int i = ((m_Size - 1) / 2); i < ((m_Size / 2) + 1); i++)
             {
                 for (int j = 0; j < m_Size; j++)
                 {
-                    if (i + j % 2 == 1)
+                    m_Table[i, j] = new CheckerSquare(i, j, null);
+                }
+            }
+                
+            initBottomSide();
+
+
+        }
+
+        private void initUpperSide()
+        {
+            CheckersMan cMan;
+
+            // occupy the squares on the upper side of the table
+            for (int i = 0; i < ((m_Size - 1) / 2); i++)
+            {
+                for (int j = 0; j < m_Size; j++)
+                {
+                    if ((i + j) % 2 == 1)
                     {
-                        m_Table[i, j] = new CheckersMan(i, j, CheckersMan.Type.O);
+                        cMan = new CheckersMan(i, j, CheckersMan.eType.O);
+                        m_Table[i, j] = new CheckerSquare(i, j, cMan);
+                    }
+                    else
+                    {
+                        m_Table[i, j] = new CheckerSquare(i, j, null);
                     }
                 }
             }
+        }
 
-            // space of 2 lines between the oponnents
+        private void initBottomSide()
+        {
+            CheckersMan cMan;
+            int bottomSide = (m_Size / 2) + 1;
+
             // put men on the bottom side of the table
-            for (i+=2; i < m_Size/2; i++)
+            for (int i = bottomSide; i < m_Size; i++)
             {
                 for (int j = 0; j < m_Size; j++)
                 {
-                    if (i + j % 2 == 1)
+                    if ((i + j) % 2 == 1)
                     {
-                        m_Table[i, j] = new CheckersMan(i, j, CheckersMan.Type.X);
+                        cMan = new CheckersMan(i, j, CheckersMan.eType.X);
+                        m_Table[i, j] = new CheckerSquare(i, j, cMan);
+                    }
+                    else
+                    {
+                        m_Table[i, j] = new CheckerSquare(i, j, null);
                     }
                 }
             }
@@ -73,17 +106,21 @@ namespace Project1
             string colSeparator = "|";
             string rowHeadline = getRowHeadLine();
             string colHeadline = getColHeadLine();
+            char colChar = (char)(Convert.ToInt32('a') - 1);
 
             Console.WriteLine(rowHeadline);
             Console.WriteLine(lineSeparator);
-            Console.WriteLine(colHeadline);
 
             for (int i = 0; i < m_Size; i++)
             {
+                colChar = (char)(Convert.ToInt32(colChar) + 1);
+                Console.Write(colChar + "|");
                 for (int j = 0; j < m_Size; j++)
                 {
-
+                    Console.Write(m_Table[i, j].ToString() + "|");
                 }
+                Console.WriteLine();
+                Console.WriteLine(lineSeparator);
             }
         }
 
