@@ -10,8 +10,8 @@ namespace Project1
     class CheckersGame
     {
         const int MaxNameLength = 20;
-        const int asciiValOfa = 65;
-        const int asciiValOfA = 97;
+        const int asciiValOfa = 97;
+        const int asciiValOfA = 65;
         const int MoveLength = 5;
         private string m_FirstUserName;
         private string m_SecondUserName;
@@ -144,37 +144,22 @@ namespace Project1
             bool isLegalCur = true;
             bool isLegalNext = true;
             bool isLegal = true;
-            string curPosition = i_MoveMessage.Substring(0, 2);
-            char sign = i_MoveMessage[2];
-            string nextPosition = i_MoveMessage.Substring(3, 2);
-            if (i_MoveMessage.Length != MoveLength || sign != '>')
+            if (i_MoveMessage.Length != MoveLength || i_MoveMessage[2] != '>')
             {
                 isLegal = false;
             }
             if (isLegal)
             {
-                isLegalCur = isLegalStep(curPosition);
-                isLegalNext = isLegalStep(nextPosition);
+                isLegalCur = isLegalFormat(i_MoveMessage.Substring(0, 2));
+                isLegalNext = isLegalFormat(i_MoveMessage.Substring(3, 2));
             }
-            return (isLegalCur && isLegalNext);
+            return (isLegal && isLegalCur && isLegalNext);
         }
-
-
-        private bool isLegalStep(string i_move)
+        private bool isLegalFormat(string i_move)
         {
-            bool isLegal = true;
             char columnMove = i_move[0];
             char rowMove = i_move[1];
-
-            if (!(columnMove - asciiValOfa >= 0 && columnMove - asciiValOfa < m_TableSize - 1))
-            {
-                isLegal = false;
-            }
-            if (isLegal && !(rowMove - asciiValOfA >= 0 && rowMove - asciiValOfA < m_TableSize - 1))
-            {
-                isLegal = false;
-            }
-            return isLegal;
+            return (Char.IsUpper(columnMove) && Char.IsLower(rowMove));
         }
     }
 }
