@@ -10,9 +10,8 @@ namespace Project1
     {
         static void Main()
         {
-            CheckersTable ct = new CheckersTable(8, 2);
-            ct.printTable();
-            Console.ReadLine();
+            CheckersGame test = new CheckersGame();
+            test.StartGame();
         }
     }
 }
