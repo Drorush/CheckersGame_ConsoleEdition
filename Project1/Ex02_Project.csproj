@@ -55,6 +55,7 @@
     <Compile Include="CheckersMan.cs" />
     <Compile Include="CheckerSquare.cs" />
     <Compile Include="CheckersTable.cs" />
+    <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>

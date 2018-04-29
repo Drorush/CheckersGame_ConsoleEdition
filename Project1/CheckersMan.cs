@@ -15,22 +15,20 @@ namespace Project1
             X,
             U,
             K,
+            None
         };
         internal eType m_Type;
-        internal int m_Posx;
-        internal int m_Posy;
 
-        public CheckersMan(int i_Posx, int i_Posy, eType i_Type)
+
+        public CheckersMan(eType i_Type)
         {
-            m_Posx = i_Posx;
-            m_Posy = i_Posy;
             m_Type = i_Type;
 
         }
 
         internal string returnType()
         {
-            string type = "   ";
+            string type = "";
 
             switch(m_Type)
             {
@@ -45,6 +43,9 @@ namespace Project1
                     break;
                 case eType.K:
                     type = " K ";
+                    break;
+                case eType.None:
+                    type = "   ";
                     break;
             }
 

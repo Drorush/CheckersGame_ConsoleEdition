@@ -20,31 +20,20 @@ namespace Project1
         }
 
         // free occupied square
-        private void free(int i_Posx, int i_Posy)
+        internal void free()
         {
-            m_CheckerMan = null;
+            m_CheckerMan.m_Type = CheckersMan.eType.None;
         }
 
         // checks if a given square is occupied
         internal bool isOccupied()
         {
-            return m_CheckerMan != null;
+            return m_CheckerMan.m_Type != CheckersMan.eType.None;
         }
 
         public override string ToString()
         {
-            string squareOccupier;
-            
-            if (m_CheckerMan == null)
-            {
-                squareOccupier = "   ";
-            }
-            else
-            {
-                squareOccupier = m_CheckerMan.returnType();
-            }
-
-            return squareOccupier;
+           return m_CheckerMan.returnType();
         }
     }
 }

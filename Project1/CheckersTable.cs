@@ -8,32 +8,87 @@ namespace Project1
 {
     class CheckersTable
     {
-        private int m_Size;
+        internal int m_Size;
         private int m_NumOfPlayers;
         private int m_NumOfMenFirstPlayer;
         private int m_NumOfMenSecondPlayer;
         internal CheckerSquare[,] m_Table;
         internal bool m_GameOver;
         private string m_Turn;
+        internal int m_NumO;
+        internal int m_NumX;
 
         /* constructor, initializing a checkers table */
         public CheckersTable(int i_TableSize, int i_NumOfPlayers)
         {
             m_Size = i_TableSize;
             m_NumOfPlayers = i_NumOfPlayers;
+            m_NumO = calcNumOfMen();
+            m_NumX = m_NumO;
             initTable();
         }
 
         /* given a string of the format COLrow>Colrow, make a move in the table */
-        internal void move(string i_MoveMessage)
+        /* returns 0 if couldnt move, returns 1 if moved */
+        internal int move(string i_MoveMessage, Player i_PlayerTurn)
         {
+            int success = 0;
+            bool punish = false;
+            CheckersLogic cLogic = new CheckersLogic(this, i_PlayerTurn);
 
+            if (cLogic.isLegalMove(i_MoveMessage, ref i_PlayerTurn))
+            {
+                // before performing a move, check if player could perform eat and didnt do it.
+                string check = cLogic.checkIfCanEat(i_MoveMessage);
+                if (!check.Equals("") && !check.Equals(i_MoveMessage))
+                {
+                    Console.WriteLine("player could eat and didnt do it, now get punished");
+                    Console.WriteLine("the eat move was : " + check);
+                    punish = true;
+                }
+                cLogic.move(i_MoveMessage, i_PlayerTurn);
+                if (punish)
+                {
+                    cLogic.punish(i_MoveMessage, check);
+                }
+
+                success = 1;
+            }
+
+            return success;
         }
 
-        internal bool isLegalMove(string i_MoveMessage)
+
+        internal CheckerSquare[] GetCheckerSquares(int i_PlayerID)
         {
-            return false;
+            int k = 0;
+            int size = i_PlayerID == 0 ? m_NumX : m_NumO;
+            CheckerSquare[] cSquare = new CheckerSquare[size];
+            for (int i = 0; i < m_Size; i++)
+            {
+                for (int j = 0; j < m_Size; j++)
+                {
+                    if (i_PlayerID == 1)
+                    {
+                        if (m_Table[i, j].m_CheckerMan.m_Type == CheckersMan.eType.O || m_Table[i, j].m_CheckerMan.m_Type == CheckersMan.eType.U)
+                        {
+                            cSquare[k++] = m_Table[i, j];
+                        }
+                    }
+                    else
+                    {
+                        if (m_Table[i, j].m_CheckerMan.m_Type == CheckersMan.eType.K || m_Table[i, j].m_CheckerMan.m_Type == CheckersMan.eType.X)
+                        {
+                            cSquare[k++] = m_Table[i, j];
+                        }
+                    }
+
+                }
+            }
+
+            return cSquare;
         }
+
 
         private void initTable()
         {
@@ -42,11 +97,12 @@ namespace Project1
 
             initUpperSide();
             // space of 2 lines between the oponnents
+            CheckersMan cMan = new CheckersMan(CheckersMan.eType.None);
             for (int i = ((m_Size - 1) / 2); i < ((m_Size / 2) + 1); i++)
             {
                 for (int j = 0; j < m_Size; j++)
                 {
-                    m_Table[i, j] = new CheckerSquare(i, j, null);
+                    m_Table[i, j] = new CheckerSquare(i, j, cMan);
                 }
             }
                 
@@ -66,12 +122,13 @@ namespace Project1
                 {
                     if ((i + j) % 2 == 1)
                     {
-                        cMan = new CheckersMan(i, j, CheckersMan.eType.O);
+                        cMan = new CheckersMan(CheckersMan.eType.O);
                         m_Table[i, j] = new CheckerSquare(i, j, cMan);
                     }
                     else
                     {
-                        m_Table[i, j] = new CheckerSquare(i, j, null);
+                        cMan = new CheckersMan(CheckersMan.eType.None);
+                        m_Table[i, j] = new CheckerSquare(i, j, cMan);
                     }
                 }
             }
@@ -89,12 +146,13 @@ namespace Project1
                 {
                     if ((i + j) % 2 == 1)
                     {
-                        cMan = new CheckersMan(i, j, CheckersMan.eType.X);
+                        cMan = new CheckersMan(CheckersMan.eType.X);
                         m_Table[i, j] = new CheckerSquare(i, j, cMan);
                     }
                     else
                     {
-                        m_Table[i, j] = new CheckerSquare(i, j, null);
+                        cMan = new CheckersMan(CheckersMan.eType.None);
+                        m_Table[i, j] = new CheckerSquare(i, j, cMan);
                     }
                 }
             }
@@ -159,20 +217,20 @@ namespace Project1
             return headLine.ToString();
         }
 
-        private int calcNumOfMen()
+        internal int calcNumOfMen()
         {
             int numOfMen = 0;
 
             switch (m_Size)
             {
                 case 6:
-                    numOfMen = 12;
+                    numOfMen = 8;
                     break;
                 case 8:
-                    numOfMen = 24;
+                    numOfMen = 12;
                     break;
                 case 10:
-                    numOfMen = 40;
+                    numOfMen = 20;
                     break;
             }
 
