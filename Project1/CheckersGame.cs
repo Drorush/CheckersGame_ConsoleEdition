@@ -37,8 +37,8 @@ namespace Project1
         {
             m_Table = new CheckersTable(m_TableSize, m_NumOfPlayers);
             m_Table.printTable();
-            m_PlayerOne = new Player(m_FirstUserName, m_Table.calcNumOfMen(), 0);
-            m_PlayerTwo = new Player(m_SecondUserName, m_Table.calcNumOfMen(), 1);
+            m_PlayerOne = new Player(m_FirstUserName, 0, 0);
+            m_PlayerTwo = new Player(m_SecondUserName, 0, 1);
             m_turn = m_FirstUserName + "\'s";
             playGame();
         }
@@ -109,7 +109,6 @@ namespace Project1
                     // else its player's turn
                     else
                     {
-                        Console.WriteLine("player now : " + playerIdTurn);
                         cSquare = m_Table.GetCheckerSquares(playerIdTurn);
                         moveMessages = logic.getPossibleMovesForPlayer(ref cSquare);
                         hasNoLegalMoves = logic.hasNoLegalMoves(moveMessages);
@@ -118,7 +117,7 @@ namespace Project1
                             break;
                         }
 
-                        moveMessage = getLegalMoveMessage();
+                        moveMessage = getLegalMoveMessage(playerIdTurn);
                         if (moveMessage.Equals("Q"))
                         {
                             surrender = true;
@@ -327,10 +326,10 @@ namespace Project1
         }
 
         /* gets a move from the user, check if it's of the Colrow>Colrow */
-        private string getLegalMoveMessage()
+        private string getLegalMoveMessage(int i_id)
         {
             string move = Console.ReadLine();
-            while (!isLegalMove(move))
+            while (!isLegalMove(move, i_id))
             {
                 Console.WriteLine("Incorrect move, please enter a new move (Format: COLRow>COLRow)");
                 move = Console.ReadLine();
@@ -341,9 +340,11 @@ namespace Project1
 
 
         /* given move, check if its legal accoring the table's logic, if so, perform the move */
-        internal bool isLegalMove(string i_MoveMessage)
+        internal bool isLegalMove(string i_MoveMessage, int i_id)
         {
-            bool isQuit = i_MoveMessage.Equals("Q");
+            bool isQuit = i_MoveMessage.Equals("Q") && checkIfCanQuit(i_id);
+            Console.WriteLine("int i_id = " + i_id);
+            Console.WriteLine("isquit = " + isQuit);
             bool isInRange = false;
             bool isLegalCur = true;
             bool isLegalNext = true;
@@ -362,6 +363,23 @@ namespace Project1
             }
 
             return isQuit || (isLegal && isLegalCur && isLegalNext && isInRange);
+        }
+
+        private bool checkIfCanQuit(int i_id)
+        {
+            bool canQuit = false;
+            if (i_id == 0)
+            {
+                Console.WriteLine(m_Table.m_NumX <= m_Table.m_NumO);
+                Console.WriteLine(m_Table.m_NumX + ", " + m_Table.m_NumO);
+                canQuit = m_Table.m_NumX <= m_Table.m_NumO;
+            }
+            else
+            {
+                canQuit = m_Table.m_NumO <= m_Table.m_NumX;
+            }
+
+            return canQuit;
         }
 
         private bool isLegalFormat(string i_move)

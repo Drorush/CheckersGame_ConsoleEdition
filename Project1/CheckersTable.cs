@@ -42,8 +42,6 @@ namespace Project1
                 string check = cLogic.checkIfCanEat(i_MoveMessage);
                 if (!check.Equals("") && !check.Equals(i_MoveMessage) && !cLogic.isEatMove(i_MoveMessage))
                 {
-                    Console.WriteLine("player could eat and didnt do it, now get punished");
-                    Console.WriteLine("the eat move was : " + check);
                     punish = true;
                 }
                 cLogic.move(i_MoveMessage, i_PlayerTurn);
@@ -54,7 +52,6 @@ namespace Project1
 
                 success = 1;
             }
-            Console.WriteLine("its not legal eat");
 
             return success;
         }
@@ -161,7 +158,7 @@ namespace Project1
 
         internal void printTable()
         {
-            string lineSeparator = " =================================";
+            string lineSeparator = getLineSeparator();
             string colSeparator = "|";
             string rowHeadline = getRowHeadLine();
             string colHeadline = getColHeadLine();
@@ -181,6 +178,19 @@ namespace Project1
                 Console.WriteLine();
                 Console.WriteLine(lineSeparator);
             }
+        }
+
+        private string getLineSeparator()
+        {
+            StringBuilder lineSeparator = new StringBuilder(" ");
+            for (int i = 0; i < m_Size; i++)
+            {
+                lineSeparator.Append("====");
+            }
+
+            lineSeparator.Append(" ");
+
+            return lineSeparator.ToString();
         }
 
         private string getRowHeadLine()

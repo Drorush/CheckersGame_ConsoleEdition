@@ -43,7 +43,6 @@ namespace Project1
                     m_Player.m_Points--;
                 }
 
-                Console.WriteLine("square to free : " + SquareToFree.m_Posx + " , " + SquareToFree.m_Posy);
                 SquareToFree.free();
             }
 
@@ -475,17 +474,13 @@ namespace Project1
                 int[] endPoint = getEndPoint(possibleMoves[i]);
                 CheckerSquare currentSquare = m_CheckersTable.m_Table[startPoint[0], startPoint[1]];
                 CheckerSquare targetSquare = m_CheckersTable.m_Table[endPoint[0], endPoint[1]];
-                Console.WriteLine("possible move: " + possibleMoves[i]);
                 if (isEatMove(currentSquare, targetSquare))
                 {
-                    Console.WriteLine("iseatmove -> true");
                     CheckerSquare SquareToFree = null;
                     bool isLegEat = isLegalEat(currentSquare, targetSquare, ref SquareToFree);
                     bool isLegEatAfterEat = isLegalEatAfterEat(currentSquare, targetSquare, ref SquareToFree);
                     if (isLegEat || isLegEatAfterEat)
                     {
-                        Console.WriteLine("islegal eat = " + isLegEat);
-                        Console.WriteLine("islegal eat after eat = " + isLegEatAfterEat);
                         eatMove = possibleMoves[i];
                         canEat = true;
                         break;
@@ -620,7 +615,6 @@ namespace Project1
                 m_CheckersTable.m_NumO--;
             }
 
-            Console.WriteLine("i am freeing square : " + X + " , " + Y);
             m_CheckersTable.m_Table[X, Y].free();
         }
 
