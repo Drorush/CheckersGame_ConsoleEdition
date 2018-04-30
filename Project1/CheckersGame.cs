@@ -43,6 +43,7 @@ namespace Project1
             playGame();
         }
 
+        // starts a new game if the users say so
         private void startNewGame()
         {
             Ex02.ConsoleUtils.Screen.Clear();
@@ -52,9 +53,9 @@ namespace Project1
             playGame();
         }
 
+        // play a game until someone wins / draw
         private void playGame()
         {
-            bool draw = false;
             bool hasNoLegalMoves = false;
             bool surrender = false;
             // we start with X player
@@ -71,7 +72,6 @@ namespace Project1
                 // if first player can eat again, we give him another turn
                 if (m_CanEatAgain && playerIdTurn == 0)
                 {
-                    Console.WriteLine("You Can eat again!");
                     m_CanEatAgain = false;
                 }
                 else
@@ -103,10 +103,10 @@ namespace Project1
                                 moveMessage = moveMessages[random.Next(moveMessages.Length)];
                             }
                             eat = logic.checkIfCanEat(moveMessage);
-                            moveMessage = eat.Equals("") ? moveMessage : eat;
+                            moveMessage = eat.Equals("") ? moveMessage : eat; // prefer the eating move
                         }
                     }
-                    // else its player's turn
+                    // player's (non-computer) turn
                     else
                     {
                         cSquare = m_Table.GetCheckerSquares(playerIdTurn);
@@ -118,7 +118,7 @@ namespace Project1
                         }
 
                         moveMessage = getLegalMoveMessage(playerIdTurn);
-                        if (moveMessage.Equals("Q"))
+                        if (moveMessage.Equals("Q")) // if players wants and can quit
                         {
                             surrender = true;
                             break;
@@ -132,9 +132,8 @@ namespace Project1
                     }
                     else
                     {
-                        // made a move
-                        // Ex02.ConsoleUtils.Screen.Clear();
-                        Console.WriteLine("\n");
+                        // made a move , clear the screen
+                        Ex02.ConsoleUtils.Screen.Clear();
                         m_Table.printTable(); // print state after the move
                         Console.WriteLine(m_turn + " move was: " + moveMessage);
                         //checks if move was eatmove
@@ -157,7 +156,7 @@ namespace Project1
                                 m_EatMove = canEat;
                             }
                         }
-                        // if it wasnt eatmove, check if he could eat someone and didnt do it, if so he lose man
+                        // if it wasnt eatmove, checks if he could eat someone and didnt do it, if so he lose man
                         else
                         {
                             switchTurn(ref playerIdTurn);
@@ -165,12 +164,13 @@ namespace Project1
 
                     }
                 }
-                if (m_Table.m_NumO == 0 || m_Table.m_NumX == 0 || draw || surrender || hasNoLegalMoves)
+                if (m_Table.m_NumO == 0 || m_Table.m_NumX == 0 || surrender || hasNoLegalMoves)
                 {
-                    Console.WriteLine("game's over !");
+                    Console.WriteLine("GAME OVER !");
                     break;
                 }
             }
+
             // something got us out of the game, check what happend
             calculatePointsAfterGame();
             Console.WriteLine("Player one has now " + m_PlayerOne.m_TotalPoints + " points");
@@ -343,8 +343,6 @@ namespace Project1
         internal bool isLegalMove(string i_MoveMessage, int i_id)
         {
             bool isQuit = i_MoveMessage.Equals("Q") && checkIfCanQuit(i_id);
-            Console.WriteLine("int i_id = " + i_id);
-            Console.WriteLine("isquit = " + isQuit);
             bool isInRange = false;
             bool isLegalCur = true;
             bool isLegalNext = true;
