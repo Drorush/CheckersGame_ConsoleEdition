@@ -305,7 +305,6 @@ namespace Project1
 
         private int[] getStartPoint(string i_MoveCommand)
         {
-            Console.WriteLine("startpoint - " + i_MoveCommand);
             int[] startPoint = new int[2];
             startPoint[1] = i_MoveCommand[0] - 65;
             startPoint[0] = i_MoveCommand[1] - 97;
@@ -315,7 +314,6 @@ namespace Project1
 
         private int[] getEndPoint(string i_MoveCommand)
         {
-            Console.WriteLine("endpoint - " + i_MoveCommand);
             int[] endPoint = new int[2];
 
             endPoint[1] = i_MoveCommand[3] - 65;
@@ -369,7 +367,6 @@ namespace Project1
         {
             string[] possibleMoves;
 
-            Console.WriteLine("getting possible moves for : " + i_CurrentSquare.m_Posx + " , " + i_CurrentSquare.m_Posy);
             if (i_CurrentSquare.m_CheckerMan.m_Type == CheckersMan.eType.K || i_CurrentSquare.m_CheckerMan.m_Type == CheckersMan.eType.U)
             {
                 possibleMoves = new string[8];
@@ -449,12 +446,10 @@ namespace Project1
         private string canEat(CheckerSquare i_Square)
         {
             bool canEat = false;
-            Console.WriteLine("check caneat for : " + i_Square.m_Posx + "," + i_Square.m_Posy);
             string[] possibleMoves = getPossibleMoves(i_Square);
             string eatMove = "";
             for (int i = 0; i < possibleMoves.Length; i++)
             {
-                Console.WriteLine(possibleMoves[i]);
                 int[] startPoint = getStartPoint(possibleMoves[i]);
                 int[] endPoint = getEndPoint(possibleMoves[i]);
                 CheckerSquare currentSquare = m_CheckersTable.m_Table[startPoint[0], startPoint[1]];
@@ -578,7 +573,6 @@ namespace Project1
 
         internal string checkIfCanEat(string i_MoveMessage)
         {
-            Console.WriteLine("checks if can eat " + i_MoveMessage);
             int id = 0;
             CheckerSquare[] cSquare;
             string eatMove = "";

@@ -40,7 +40,7 @@ namespace Project1
 
                 // before performing a move, check if player could perform eat and didnt do it.
                 string check = cLogic.checkIfCanEat(i_MoveMessage);
-                if (!check.Equals("") && !check.Equals(i_MoveMessage))
+                if (!check.Equals("") && !check.Equals(i_MoveMessage) && !cLogic.isEatMove(i_MoveMessage))
                 {
                     Console.WriteLine("player could eat and didnt do it, now get punished");
                     Console.WriteLine("the eat move was : " + check);
