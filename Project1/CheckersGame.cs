@@ -30,13 +30,38 @@ namespace Project1
             m_FirstUserName = getUserName();
             getTableSize();
             getNumOfPlayers();
+            initGame();
+        }
+
+        private void initGame()
+        {
             m_Table = new CheckersTable(m_TableSize, m_NumOfPlayers);
             m_Table.printTable();
             m_PlayerOne = new Player(m_FirstUserName, m_Table.calcNumOfMen(), 0);
             m_PlayerTwo = new Player(m_SecondUserName, m_Table.calcNumOfMen(), 1);
             m_turn = m_FirstUserName + "\'s";
-            string moveMessage = "";
+            playGame();
+        }
+
+        private void startNewGame()
+        {
+            Ex02.ConsoleUtils.Screen.Clear();
+            Console.WriteLine("-- We are starting a new game -- GOOD LUCK !");
+            m_Table = new CheckersTable(m_TableSize, m_NumOfPlayers);
+            m_Table.printTable();
+            playGame();
+        }
+
+        private void playGame()
+        {
+            bool draw = false;
+            bool hasNoLegalMoves = false;
+            bool surrender = false;
+            // we start with X player
             int playerIdTurn = 0;
+            string moveMessage = "";
+            CheckerSquare[] cSquare;
+            string[] moveMessages;
 
             // play the game till its over
             while (!m_Table.m_GameOver)
@@ -54,11 +79,17 @@ namespace Project1
                     // if we are playing against the computer
                     if (m_turn.Equals("Computer\'s"))
                     {
-                        CheckerSquare[] cSquare = m_Table.GetCheckerSquares(1);
-                        string[] moveMessages = logic.getPossibleMovesForPlayer(ref cSquare);
+                        cSquare = m_Table.GetCheckerSquares(1);
+                        moveMessages = logic.getPossibleMovesForPlayer(ref cSquare);
+                        hasNoLegalMoves = logic.hasNoLegalMoves(moveMessages);
+                        playerIdTurn = 1;
+                        if (hasNoLegalMoves)
+                        {
+                            break;
+                        }
+
                         Random random = new Random();
                         moveMessage = moveMessages[random.Next(moveMessages.Length)];
-                        playerIdTurn = 1;
                         if (m_CanEatAgain)
                         {
                             moveMessage = m_EatMove;
@@ -78,7 +109,21 @@ namespace Project1
                     // else its player's turn
                     else
                     {
+                        Console.WriteLine("player now : " + playerIdTurn);
+                        cSquare = m_Table.GetCheckerSquares(playerIdTurn);
+                        moveMessages = logic.getPossibleMovesForPlayer(ref cSquare);
+                        hasNoLegalMoves = logic.hasNoLegalMoves(moveMessages);
+                        if (hasNoLegalMoves)
+                        {
+                            break;
+                        }
+
                         moveMessage = getLegalMoveMessage();
+                        if (moveMessage.Equals("Q"))
+                        {
+                            surrender = true;
+                            break;
+                        }
                     }
 
                     int moveIndicator = m_Table.move(moveMessage, getPlayerById(playerIdTurn));
@@ -109,7 +154,6 @@ namespace Project1
                             }
                             else
                             {
-                                Console.WriteLine("you can eat again, the move is : " + canEat);
                                 m_CanEatAgain = true;
                                 m_EatMove = canEat;
                             }
@@ -122,6 +166,47 @@ namespace Project1
 
                     }
                 }
+                if (m_Table.m_NumO == 0 || m_Table.m_NumX == 0 || draw || surrender || hasNoLegalMoves)
+                {
+                    Console.WriteLine("game's over !");
+                    break;
+                }
+            }
+            // something got us out of the game, check what happend
+            calculatePointsAfterGame();
+            Console.WriteLine("Player one has now " + m_PlayerOne.m_TotalPoints + " points");
+            Console.WriteLine("Player two has now " + m_PlayerTwo.m_TotalPoints + " points");
+            checkIfPlayAgain();
+        }
+
+        private void checkIfPlayAgain()
+        {
+            Console.WriteLine("Do you want to play another game?");
+            Console.WriteLine("If yes, please type yes (and then press enter). If no, type anything and then press enter");
+            string yesno = Console.ReadLine();
+            
+            if (yesno.Equals("yes") || yesno.Equals("Yes") || yesno.Equals("YES"))
+            {
+                startNewGame();
+            }
+            else
+            {
+                Console.WriteLine("Good bye !!");
+            }
+        }
+
+        private void calculatePointsAfterGame()
+        {
+            int playerOnePoints = m_Table.calculatePoints(0);
+            int playerTwoPoints = m_Table.calculatePoints(1);
+
+            if (playerOnePoints >= playerTwoPoints)
+            {
+                m_PlayerOne.m_TotalPoints += playerOnePoints - playerTwoPoints;
+            }
+            else
+            {
+                m_PlayerTwo.m_TotalPoints += playerTwoPoints - playerOnePoints;
             }
         }
 
@@ -258,6 +343,7 @@ namespace Project1
         /* given move, check if its legal accoring the table's logic, if so, perform the move */
         internal bool isLegalMove(string i_MoveMessage)
         {
+            bool isQuit = i_MoveMessage.Equals("Q");
             bool isInRange = false;
             bool isLegalCur = true;
             bool isLegalNext = true;
@@ -275,7 +361,7 @@ namespace Project1
                 isLegalNext = isLegalFormat(i_MoveMessage.Substring(3, 2));
             }
 
-            return (isLegal && isLegalCur && isLegalNext && isInRange);
+            return isQuit || (isLegal && isLegalCur && isLegalNext && isInRange);
         }
 
         private bool isLegalFormat(string i_move)

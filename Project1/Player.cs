@@ -14,6 +14,7 @@ namespace Project1
         internal CheckersMan.eType m_FirstType;
         internal CheckersMan.eType m_SecondType;
         internal bool m_JustAte;
+        internal int m_TotalPoints = 0;
 
         public Player(string i_name, int i_points, int i_id)
         {

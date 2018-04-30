@@ -237,5 +237,25 @@ namespace Project1
 
             return numOfMen;
         }
+
+        internal int calculatePoints(int i_id)
+        {
+            int calculatePoints = 0;
+
+            CheckerSquare[] cSquare = GetCheckerSquares(i_id);
+            for (int i = 0; i < cSquare.Length; i++)
+            {
+                if (cSquare[i].m_CheckerMan.m_Type == CheckersMan.eType.K || cSquare[i].m_CheckerMan.m_Type == CheckersMan.eType.U)
+                {
+                    calculatePoints += 4;
+                }
+                else
+                {
+                    calculatePoints += 1;
+                }
+            }
+
+            return calculatePoints;
+        }
     }
 }
