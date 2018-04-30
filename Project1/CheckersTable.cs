@@ -35,7 +35,6 @@ namespace Project1
             int success = 0;
             bool punish = false;
             CheckersLogic cLogic = new CheckersLogic(this, i_PlayerTurn);
-
             if (cLogic.isLegalMove(i_MoveMessage, ref i_PlayerTurn))
             {
                 // before performing a move, check if player could perform eat and didnt do it.
@@ -224,7 +223,7 @@ namespace Project1
             switch (m_Size)
             {
                 case 6:
-                    numOfMen = 8;
+                    numOfMen = 6;
                     break;
                 case 8:
                     numOfMen = 12;

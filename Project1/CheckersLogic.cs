@@ -29,34 +29,25 @@ namespace Project1
             CheckerSquare targetSquare = m_CheckersTable.m_Table[endPoint[0], endPoint[1]];
             CheckerSquare SquareToFree = null;
             // make the move !
-            bool justAte = false;
-            if (isEatMove(currentSquare, targetSquare))
+            if (isLegalEat(currentSquare, targetSquare, ref SquareToFree))
             {
-                if (m_Player.m_JustAte)
+                Console.WriteLine("islegaleat = " + isLegalEat(currentSquare, targetSquare, ref SquareToFree) + "with square : " + currentSquare.m_Posx + "," + currentSquare.m_Posy + "->" + targetSquare.m_Posx + "," + targetSquare.m_Posy);
+                // perform the eat
+                if (SquareToFree.m_CheckerMan.returnType().Equals(" K ") || SquareToFree.m_CheckerMan.returnType().Equals(" X "))
                 {
-                    justAte = isLegalEatAfterEat(currentSquare, targetSquare, ref SquareToFree);
-                    Console.WriteLine("justate = " + justAte + " with square : " + currentSquare.m_Posx + "," + currentSquare.m_Posy + "->" + targetSquare.m_Posx + "," + targetSquare.m_Posy);
+                    m_CheckersTable.m_NumX--;
+                    m_Player.m_Points--;
+                }
+                else
+                {
+                    m_CheckersTable.m_NumO--;
+                    m_Player.m_Points--;
                 }
 
-                if (justAte || isLegalEat(currentSquare, targetSquare, ref SquareToFree))
-                {
-                    Console.WriteLine("justate || islegaleat = " + justAte + " with square : " + currentSquare.m_Posx + "," + currentSquare.m_Posy + "->" + targetSquare.m_Posx + "," + targetSquare.m_Posy);
-                    // perform the eat
-                    if (SquareToFree.m_CheckerMan.returnType().Equals(" K ") || SquareToFree.m_CheckerMan.returnType().Equals(" X "))
-                    {
-                        m_CheckersTable.m_NumX--;
-                        m_Player.m_Points--;
-                    }
-                    else
-                    {
-                        m_CheckersTable.m_NumO--;
-                        m_Player.m_Points--;
-                    }
-
-                    Console.WriteLine("square to free : " + SquareToFree.m_Posx + " , " + SquareToFree.m_Posy);
-                    SquareToFree.free();
-                }
+                Console.WriteLine("square to free : " + SquareToFree.m_Posx + " , " + SquareToFree.m_Posy);
+                SquareToFree.free();
             }
+
             if (targetSquare.m_Posx == 0 || targetSquare.m_Posx == (m_TableSize - 1) && currentSquare.m_CheckerMan.m_Type != CheckersMan.eType.K && currentSquare.m_CheckerMan.m_Type != CheckersMan.eType.U) // MAKE KING !!
             {
                 if (currentSquare.m_CheckerMan.m_Type == CheckersMan.eType.X)
@@ -95,12 +86,6 @@ namespace Project1
                 {
                     CheckerSquare SquareToFree = null;
                     fourthCheck = isLegalEat(currentSquare, targetSquare, ref SquareToFree);
-                    Console.WriteLine("islegal eat : " + fourthCheck);
-                    if (i_MovePlayer.m_JustAte)
-                    {
-                        fourthCheck = fourthCheck || isLegalEatAfterEat(currentSquare, targetSquare, ref SquareToFree);
-                        Console.WriteLine("islegal eat after eat : " + fourthCheck);
-                    }
                 }
 
             }
@@ -126,10 +111,6 @@ namespace Project1
             }
 
             isEatMove = isEatMove && Math.Abs(i_CurrentSquare.m_Posy - i_TargetSquare.m_Posy) == 2;
-            if(m_Player.m_JustAte)
-            {
-                isEatMove = Math.Abs(i_CurrentSquare.m_Posy - i_TargetSquare.m_Posy) == 2 && Math.Abs(i_CurrentSquare.m_Posx - i_TargetSquare.m_Posx) == 2;
-            }
 
             return isEatMove;
         }
@@ -324,6 +305,7 @@ namespace Project1
 
         private int[] getStartPoint(string i_MoveCommand)
         {
+            Console.WriteLine("startpoint - " + i_MoveCommand);
             int[] startPoint = new int[2];
             startPoint[1] = i_MoveCommand[0] - 65;
             startPoint[0] = i_MoveCommand[1] - 97;
@@ -333,6 +315,7 @@ namespace Project1
 
         private int[] getEndPoint(string i_MoveCommand)
         {
+            Console.WriteLine("endpoint - " + i_MoveCommand);
             int[] endPoint = new int[2];
 
             endPoint[1] = i_MoveCommand[3] - 65;
@@ -429,6 +412,10 @@ namespace Project1
             char targetRowChar = Convert.ToChar((Endx + 97));
             char targetColChar = Convert.ToChar((Endy + 65));
             string move = currentColChar + "" + currentRowChar + ">" + targetColChar + targetRowChar;
+            bool islegalmove = isLegalMove(move, ref m_Player);
+            bool checkrange = checkRange(move);
+            Console.WriteLine("is in range = " + checkrange);
+            Console.WriteLine("islegalmove = " + islegalmove);
             if (!checkRange(move) || !isLegalMove(move, ref m_Player))
             {
                 move = "Aa>Aa";
@@ -489,7 +476,7 @@ namespace Project1
         internal string canEatAfterEat(CheckerSquare i_Square)
         {
             bool canEat = false;
-            string[] possibleMoves = getPossibleMovesAfterEat(i_Square);
+            string[] possibleMoves = getPossibleMoves(i_Square);
             string eatMove = "";
             for (int i = 0; i < possibleMoves.Length; i++)
             {
