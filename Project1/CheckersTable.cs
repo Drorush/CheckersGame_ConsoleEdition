@@ -37,6 +37,7 @@ namespace Project1
             CheckersLogic cLogic = new CheckersLogic(this, i_PlayerTurn);
             if (cLogic.isLegalMove(i_MoveMessage, ref i_PlayerTurn))
             {
+
                 // before performing a move, check if player could perform eat and didnt do it.
                 string check = cLogic.checkIfCanEat(i_MoveMessage);
                 if (!check.Equals("") && !check.Equals(i_MoveMessage))
@@ -53,6 +54,7 @@ namespace Project1
 
                 success = 1;
             }
+            Console.WriteLine("its not legal eat");
 
             return success;
         }

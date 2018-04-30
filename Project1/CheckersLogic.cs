@@ -368,6 +368,8 @@ namespace Project1
         internal string[] getPossibleMoves(CheckerSquare i_CurrentSquare)
         {
             string[] possibleMoves;
+
+            Console.WriteLine("getting possible moves for : " + i_CurrentSquare.m_Posx + " , " + i_CurrentSquare.m_Posy);
             if (i_CurrentSquare.m_CheckerMan.m_Type == CheckersMan.eType.K || i_CurrentSquare.m_CheckerMan.m_Type == CheckersMan.eType.U)
             {
                 possibleMoves = new string[8];
@@ -412,10 +414,7 @@ namespace Project1
             char targetRowChar = Convert.ToChar((Endx + 97));
             char targetColChar = Convert.ToChar((Endy + 65));
             string move = currentColChar + "" + currentRowChar + ">" + targetColChar + targetRowChar;
-            bool islegalmove = isLegalMove(move, ref m_Player);
-            bool checkrange = checkRange(move);
-            Console.WriteLine("is in range = " + checkrange);
-            Console.WriteLine("islegalmove = " + islegalmove);
+
             if (!checkRange(move) || !isLegalMove(move, ref m_Player))
             {
                 move = "Aa>Aa";
@@ -450,10 +449,12 @@ namespace Project1
         private string canEat(CheckerSquare i_Square)
         {
             bool canEat = false;
+            Console.WriteLine("check caneat for : " + i_Square.m_Posx + "," + i_Square.m_Posy);
             string[] possibleMoves = getPossibleMoves(i_Square);
             string eatMove = "";
             for (int i = 0; i < possibleMoves.Length; i++)
             {
+                Console.WriteLine(possibleMoves[i]);
                 int[] startPoint = getStartPoint(possibleMoves[i]);
                 int[] endPoint = getEndPoint(possibleMoves[i]);
                 CheckerSquare currentSquare = m_CheckersTable.m_Table[startPoint[0], startPoint[1]];
@@ -577,6 +578,7 @@ namespace Project1
 
         internal string checkIfCanEat(string i_MoveMessage)
         {
+            Console.WriteLine("checks if can eat " + i_MoveMessage);
             int id = 0;
             CheckerSquare[] cSquare;
             string eatMove = "";
