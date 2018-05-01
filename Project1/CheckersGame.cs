@@ -19,7 +19,7 @@ namespace Project1
         private int m_NumOfPlayers;
         private int m_TableSize;
         private CheckersTable m_Table;
-        internal string m_Turn;
+        internal string M_Turn;
 
         public void StartGame()
         {
@@ -36,7 +36,7 @@ namespace Project1
             m_Table.printTable();
             m_PlayerOne = new Player(m_FirstUserName, 0, 0);
             m_PlayerTwo = new Player(m_SecondUserName, 0, 1);
-            m_turn = m_FirstUserName + "\'s";
+            M_Turn = m_FirstUserName + "\'s";
             playGame();
         }
 
@@ -65,7 +65,7 @@ namespace Project1
             while (true)
             {
                 CheckersLogic logic = new CheckersLogic(m_Table, getPlayerById(playerIdTurn));
-                Console.WriteLine(m_turn + " turn " + getMoveType(playerIdTurn) + ":");
+                Console.WriteLine(M_Turn + " turn " + getMoveType(playerIdTurn) + ":");
                 // if first player can eat again, we give him another turn
                 if (m_CanEatAgain && playerIdTurn == 0)
                 {
@@ -74,7 +74,7 @@ namespace Project1
                 else
                 {
                     // if we are playing against the computer
-                    if (m_turn.Equals("Computer\'s"))
+                    if (M_Turn.Equals("Computer\'s"))
                     {
                         cSquare = m_Table.GetCheckerSquares(1);
                         moveMessages = logic.getPossibleMovesForPlayer(ref cSquare);
@@ -133,7 +133,7 @@ namespace Project1
                         Ex02.ConsoleUtils.Screen.Clear();
                         Console.WriteLine("\n");
                         m_Table.printTable(); // print state after the move
-                        Console.WriteLine(m_turn  + " move was: " + getMoveType(playerIdTurn) + ": " + moveMessage);
+                        Console.WriteLine(M_Turn  + " move was: " + getMoveType(playerIdTurn) + ": " + moveMessage);
                         //checks if move was eatmove
                         if (logic.isEatMove(moveMessage))
                         {
@@ -231,18 +231,18 @@ namespace Project1
 
         private void switchTurn(ref int i_id)
         {
-            if (m_turn.Equals(m_FirstUserName + "\'s"))
+            if (M_Turn.Equals(m_FirstUserName + "\'s"))
             {
-                m_turn = m_SecondUserName;
+                M_Turn = m_SecondUserName;
                     i_id = 1;
             }
             else
             {
-                m_turn = m_FirstUserName;
+                M_Turn = m_FirstUserName;
                 i_id = 0;
             }
 
-            m_turn += "\'s";
+            M_Turn += "\'s";
         }
 
         private string getUserName()
