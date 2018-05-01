@@ -265,8 +265,10 @@ namespace Project1
             {
                 name = Console.ReadLine();
             }
+
             return name;
         }
+
         private bool legalName(string i_input)
         {
             bool isLegal = true;
@@ -275,16 +277,17 @@ namespace Project1
                 isLegal = false;
                 Console.WriteLine("Your name is invalid please enter a new name (less than 20 characters)");
             }
+
             return isLegal;
         }
 
         private void getTableSize()
         {
             Console.WriteLine("Hey " + m_FirstUserName + " please choose a table size :10, 8 , 6");
-            int.TryParse(Console.ReadLine(),out int number);
+            int.TryParse(Console.ReadLine(), out int number);
             while (!legalSize(number))
             {
-                int.TryParse(Console.ReadLine(),out number);
+                int.TryParse(Console.ReadLine(), out number);
             }
 
             m_TableSize = number;
@@ -311,6 +314,7 @@ namespace Project1
             string input = Console.ReadLine();
             gameType(input);
         }
+
         private void gameType(string i_input)
         {
             while(i_input != "1" && i_input != "2") 
@@ -320,6 +324,7 @@ namespace Project1
                 Console.WriteLine("2 - Second player");
                 i_input = Console.ReadLine();
             }
+
             if(i_input == "1")
             {
                 m_SecondUserName = "Computer";
@@ -331,6 +336,7 @@ namespace Project1
                 m_NumOfPlayers = 2;
             }
         }
+
         private string getSecondName()
         {
             Console.WriteLine("Please enter second player's name");
@@ -339,6 +345,7 @@ namespace Project1
             {
                 name = Console.ReadLine();
             }
+
             return name;
         }
 
@@ -354,7 +361,6 @@ namespace Project1
 
             return move;
         }
-
 
         /* given move, check if its legal accoring the table's logic, if so, perform the move */
         internal bool isLegalMove(string i_MoveMessage, int i_id)
@@ -401,10 +407,9 @@ namespace Project1
         {
             char columnMove = i_move[0];
             char rowMove = i_move[1];
-            return (Char.IsUpper(columnMove) && Char.IsLower(rowMove));
+
+            return char.IsUpper(columnMove) && char.IsLower(rowMove);
         }
-
-
 
         private bool checkRange(string i_MoveMessage)
         {
