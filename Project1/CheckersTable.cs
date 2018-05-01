@@ -37,7 +37,7 @@ namespace Project1
                     punish = true;
                 }
 
-                cLogic.move(i_MoveMessage, i_PlayerTurn, punish);
+                move(i_MoveMessage, i_PlayerTurn, punish);
                 if (punish)
                 {
                     cLogic.punish(i_MoveMessage, check);
@@ -47,6 +47,51 @@ namespace Project1
             }
 
             return success;
+        }
+
+        // perform a move //
+        internal void move(string i_MoveCommand, Player i_Player, bool i_punish)
+        {
+            CheckersLogic cLogic = new CheckersLogic(this, i_Player);
+            int[] startPoint = cLogic.getStartPoint(i_MoveCommand);
+            int[] endPoint = cLogic.getEndPoint(i_MoveCommand);
+            CheckerSquare currentSquare = m_Table[startPoint[0], startPoint[1]];
+            CheckerSquare targetSquare = m_Table[endPoint[0], endPoint[1]];
+            CheckerSquare SquareToFree = null;
+
+            // make the move !
+            if (!i_punish)
+            {
+                if (cLogic.isLegalEat(currentSquare, targetSquare, ref SquareToFree))
+                {
+                    // perform the eat
+                    if (SquareToFree.m_CheckerMan.returnType().Equals(" K ") || SquareToFree.m_CheckerMan.returnType().Equals(" X "))
+                    {
+                        m_NumX--;
+                    }
+                    else
+                    {
+                        m_NumO--;
+                    }
+
+                    SquareToFree.free();
+                }
+            }
+
+            if ((targetSquare.m_Posx == 0 || targetSquare.m_Posx == m_Size - 1) && currentSquare.m_CheckerMan.m_Type != CheckersMan.eType.K && currentSquare.m_CheckerMan.m_Type != CheckersMan.eType.U)
+            {
+                if (currentSquare.m_CheckerMan.m_Type == CheckersMan.eType.X)
+                {
+                    currentSquare.m_CheckerMan = new CheckersMan(CheckersMan.eType.K);
+                }
+                else if (currentSquare.m_CheckerMan.m_Type == CheckersMan.eType.O)
+                {
+                    currentSquare.m_CheckerMan = new CheckersMan(CheckersMan.eType.U);
+                }
+            }
+
+            targetSquare.m_CheckerMan = new CheckersMan(currentSquare.m_CheckerMan.m_Type);
+            currentSquare.m_CheckerMan.m_Type = CheckersMan.eType.None;
         }
 
         internal CheckerSquare[] GetCheckerSquares(int i_PlayerID)

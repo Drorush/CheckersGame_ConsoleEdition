@@ -18,50 +18,6 @@ namespace Project1
             m_Player = i_Player;
         }
 
-        // perform a move //
-        internal void move(string i_MoveCommand, Player i_Player, bool i_punish)
-        {
-            int[] startPoint = getStartPoint(i_MoveCommand);
-            int[] endPoint = getEndPoint(i_MoveCommand);
-            CheckerSquare currentSquare = m_CheckersTable.m_Table[startPoint[0], startPoint[1]];
-            CheckerSquare targetSquare = m_CheckersTable.m_Table[endPoint[0], endPoint[1]];
-            CheckerSquare SquareToFree = null;
-
-            // make the move !
-            if (!i_punish)
-            {
-                if (isLegalEat(currentSquare, targetSquare, ref SquareToFree))
-                {
-                    // perform the eat
-                    if (SquareToFree.m_CheckerMan.returnType().Equals(" K ") || SquareToFree.m_CheckerMan.returnType().Equals(" X "))
-                    {
-                        m_CheckersTable.m_NumX--;
-                    }
-                    else
-                    {
-                        m_CheckersTable.m_NumO--;
-                    }
-
-                    SquareToFree.free();
-                }
-            }
-
-            if ((targetSquare.m_Posx == 0 || targetSquare.m_Posx == m_TableSize - 1) && currentSquare.m_CheckerMan.m_Type != CheckersMan.eType.K && currentSquare.m_CheckerMan.m_Type != CheckersMan.eType.U)
-            {
-                if (currentSquare.m_CheckerMan.m_Type == CheckersMan.eType.X)
-                {
-                    currentSquare.m_CheckerMan = new CheckersMan(CheckersMan.eType.K);
-                }
-                else if (currentSquare.m_CheckerMan.m_Type == CheckersMan.eType.O)
-                {
-                    currentSquare.m_CheckerMan = new CheckersMan(CheckersMan.eType.U);
-                }
-            }
-
-            targetSquare.m_CheckerMan = new CheckersMan(currentSquare.m_CheckerMan.m_Type);
-            currentSquare.m_CheckerMan.m_Type = CheckersMan.eType.None;
-        }
-
         internal bool isLegalMove(string i_MoveCommand, ref Player i_MovePlayer)
         {
             int[] startPoint = getStartPoint(i_MoveCommand);
@@ -120,72 +76,90 @@ namespace Project1
 
             if (i_CurrentSquare.m_CheckerMan.m_Type == CheckersMan.eType.K)
             {
-                // check what kind of eat is it
-                if (i_CurrentSquare.m_Posx == i_TargetSquare.m_Posx + 2)
+                isLegalEatForKing = isLegalEatForK(i_CurrentSquare, i_TargetSquare, ref i_SquareToFree);
+            }
+            else
+            {
+                isLegalEatForKing = isLegalEatForU(i_CurrentSquare, i_TargetSquare, ref i_SquareToFree);
+            }
+
+            return isLegalEatForKing;
+        }
+
+        private bool isLegalEatForU(CheckerSquare i_CurrentSquare, CheckerSquare i_TargetSquare, ref CheckerSquare i_SquareToFree)
+        {
+            bool isLegalEatForKing = false;
+
+            if (i_CurrentSquare.m_Posx == i_TargetSquare.m_Posx + 2)
+            {
+                if (i_CurrentSquare.m_Posx > 1)
                 {
-                    if (i_CurrentSquare.m_Posx > 1)
+                    if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy < m_TableSize - 2)
                     {
-                        if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy < m_TableSize - 2)
-                        {
-                            isLegalEatForKing = canXEatUpSideRight(i_CurrentSquare, i_TargetSquare);
-                            i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1];
-                        }
-                        else if (i_CurrentSquare.m_Posy > i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy > 1)
-                        {
-                            isLegalEatForKing = canXEatUpSideLeft(i_CurrentSquare, i_TargetSquare);
-                            i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1];
-                        }
+                        isLegalEatForKing = canUEatUpSideRight(i_CurrentSquare, i_TargetSquare);
+                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1];
                     }
-                }
-                else
-                {
-                    if (i_CurrentSquare.m_Posx < m_TableSize - 2)
+                    else if (i_CurrentSquare.m_Posy > i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy > 1)
                     {
-                        if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy < m_TableSize - 2)
-                        {
-                            isLegalEatForKing = canKEatDownSideRight(i_CurrentSquare, i_TargetSquare);
-                            i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1];
-                        }
-                        else if (i_CurrentSquare.m_Posy > i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy > 1)
-                        {
-                            isLegalEatForKing = canKEatDownSideLeft(i_CurrentSquare, i_TargetSquare);
-                            i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1];
-                        }
+                        isLegalEatForKing = canUEatUpSideLeft(i_CurrentSquare, i_TargetSquare);
+                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1];
                     }
                 }
             }
             else
             {
-                if (i_CurrentSquare.m_Posx == i_TargetSquare.m_Posx + 2)
+                if (i_CurrentSquare.m_Posx < m_TableSize - 2)
                 {
-                    if (i_CurrentSquare.m_Posx > 1)
+                    if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy < m_TableSize - 2)
                     {
-                        if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy < m_TableSize - 2)
-                        {
-                            isLegalEatForKing = canUEatUpSideRight(i_CurrentSquare, i_TargetSquare);
-                            i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1];
-                        }
-                        else if (i_CurrentSquare.m_Posy > i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy > 1) 
-                        {
-                            isLegalEatForKing = canUEatUpSideLeft(i_CurrentSquare, i_TargetSquare);
-                            i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1];
-                        }
+                        isLegalEatForKing = canOEatDownSideRight(i_CurrentSquare, i_TargetSquare);
+                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1];
+                    }
+                    else if (i_CurrentSquare.m_Posy > i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy > 1)
+                    {
+                        isLegalEatForKing = canOEatDownSideLeft(i_CurrentSquare, i_TargetSquare);
+                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1];
                     }
                 }
-                else
+            }
+
+            return isLegalEatForKing;
+        }
+
+        private bool isLegalEatForK(CheckerSquare i_CurrentSquare, CheckerSquare i_TargetSquare, ref CheckerSquare i_SquareToFree)
+        {
+            bool isLegalEatForKing = false;
+
+            // check what kind of eat is it
+            if (i_CurrentSquare.m_Posx == i_TargetSquare.m_Posx + 2)
+            {
+                if (i_CurrentSquare.m_Posx > 1)
                 {
-                    if (i_CurrentSquare.m_Posx < m_TableSize - 2)
+                    if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy < m_TableSize - 2)
                     {
-                        if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy < m_TableSize - 2)
-                        {
-                            isLegalEatForKing = canOEatDownSideRight(i_CurrentSquare, i_TargetSquare);
-                            i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1];
-                        }
-                        else if (i_CurrentSquare.m_Posy > i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy > 1)
-                        {
-                            isLegalEatForKing = canOEatDownSideLeft(i_CurrentSquare, i_TargetSquare);
-                            i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1];
-                        }
+                        isLegalEatForKing = canXEatUpSideRight(i_CurrentSquare, i_TargetSquare);
+                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1];
+                    }
+                    else if (i_CurrentSquare.m_Posy > i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy > 1)
+                    {
+                        isLegalEatForKing = canXEatUpSideLeft(i_CurrentSquare, i_TargetSquare);
+                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1];
+                    }
+                }
+            }
+            else
+            {
+                if (i_CurrentSquare.m_Posx < m_TableSize - 2)
+                {
+                    if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy < m_TableSize - 2)
+                    {
+                        isLegalEatForKing = canKEatDownSideRight(i_CurrentSquare, i_TargetSquare);
+                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1];
+                    }
+                    else if (i_CurrentSquare.m_Posy > i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy > 1)
+                    {
+                        isLegalEatForKing = canKEatDownSideLeft(i_CurrentSquare, i_TargetSquare);
+                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1];
                     }
                 }
             }
@@ -318,7 +292,7 @@ namespace Project1
             return isLegalForMen;
         }
 
-        private bool isLegalEat(CheckerSquare i_CurrentSquare, CheckerSquare i_TargetSquare, ref CheckerSquare i_SquareToFree)
+        internal bool isLegalEat(CheckerSquare i_CurrentSquare, CheckerSquare i_TargetSquare, ref CheckerSquare i_SquareToFree)
         {
             bool isLegalEat = false;
 
@@ -361,7 +335,7 @@ namespace Project1
             return isDiagonal;
         }
 
-        private int[] getStartPoint(string i_MoveCommand)
+        internal int[] getStartPoint(string i_MoveCommand)
         {
             int[] startPoint = new int[2];
             startPoint[1] = i_MoveCommand[0] - 65;
@@ -370,7 +344,7 @@ namespace Project1
             return startPoint;
         }
 
-        private int[] getEndPoint(string i_MoveCommand)
+        internal int[] getEndPoint(string i_MoveCommand)
         {
             int[] endPoint = new int[2];
 
