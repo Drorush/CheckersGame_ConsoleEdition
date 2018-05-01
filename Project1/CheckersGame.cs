@@ -19,7 +19,7 @@ namespace Project1
         private int m_NumOfPlayers;
         private int m_TableSize;
         private CheckersTable m_Table;
-        internal string M_Turn;
+        internal string m_Turn;
 
         public void StartGame()
         {
@@ -36,7 +36,7 @@ namespace Project1
             m_Table.printTable();
             m_PlayerOne = new Player(m_FirstUserName, 0, 0);
             m_PlayerTwo = new Player(m_SecondUserName, 0, 1);
-            M_Turn = m_FirstUserName + "\'s";
+            m_Turn = m_FirstUserName + "\'s";
             playGame();
         }
 
@@ -47,6 +47,7 @@ namespace Project1
             Console.WriteLine("-- We are starting a new game -- GOOD LUCK !");
             m_Table = new CheckersTable(m_TableSize, m_NumOfPlayers);
             m_Table.printTable();
+            m_Turn = m_PlayerOne.m_Name + "\'s";
             playGame();
         }
 
@@ -66,7 +67,7 @@ namespace Project1
             while (true)
             {
                 CheckersLogic logic = new CheckersLogic(m_Table, getPlayerById(playerIdTurn));
-                Console.WriteLine(M_Turn + " turn " + getMoveType(playerIdTurn) + ":");
+                Console.WriteLine(m_Turn + " turn " + getMoveType(playerIdTurn) + ":");
 
                 //// if first player can eat again, we give him another turn
                 if (m_CanEatAgain && playerIdTurn == 0)
@@ -76,7 +77,7 @@ namespace Project1
                 else
                 {
                     // if we are playing against the computer
-                    if (M_Turn.Equals("Computer\'s"))
+                    if (m_Turn.Equals("Computer\'s"))
                     {
                         cSquare = m_Table.GetCheckerSquares(1);
                         moveMessages = logic.getPossibleMovesForPlayer(ref cSquare);
@@ -143,7 +144,7 @@ namespace Project1
 
                         // print state after the move
                         m_Table.printTable(); 
-                        Console.WriteLine(M_Turn  + " move was: " + getMoveType(playerIdTurn) + ": " + moveMessage);
+                        Console.WriteLine(m_Turn  + " move was: " + getMoveType(playerIdTurn) + ": " + moveMessage);
 
                         // checks if move was eatmove
                         if (logic.isEatMove(moveMessage))
@@ -183,8 +184,8 @@ namespace Project1
 
             // something got us out of the game, check what happend
             calculatePointsAfterGame();
-            Console.WriteLine("Player one has now " + m_PlayerOne.m_TotalPoints + " points");
-            Console.WriteLine("Player two has now " + m_PlayerTwo.m_TotalPoints + " points");
+            Console.WriteLine(m_PlayerOne.m_Name + " has now " + m_PlayerOne.m_TotalPoints + " points");
+            Console.WriteLine(m_PlayerTwo.m_Name + " has now " + m_PlayerTwo.m_TotalPoints + " points");
             checkIfPlayAgain();
         }
 
@@ -243,18 +244,18 @@ namespace Project1
 
         private void switchTurn(ref int i_id)
         {
-            if (M_Turn.Equals(m_FirstUserName + "\'s"))
+            if (m_Turn.Equals(m_FirstUserName + "\'s"))
             {
-                M_Turn = m_SecondUserName;
+                m_Turn = m_SecondUserName;
                     i_id = 1;
             }
             else
             {
-                M_Turn = m_FirstUserName;
+                m_Turn = m_FirstUserName;
                 i_id = 0;
             }
 
-            M_Turn += "\'s";
+            m_Turn += "\'s";
         }
 
         private string getUserName()

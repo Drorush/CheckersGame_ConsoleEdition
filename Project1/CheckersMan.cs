@@ -1,7 +1,7 @@
 ﻿namespace Project1
 {
     // this class represents man object
-    class CheckersMan
+    internal class CheckersMan
     {
         internal enum eType
         {
@@ -10,19 +10,18 @@
             U,
             K,
             None
-        };
-        internal eType m_Type;
+        }
 
+        internal eType m_Type;
 
         public CheckersMan(eType i_Type)
         {
             m_Type = i_Type;
-
         }
 
         internal string returnType()
         {
-            string type = "";
+            string type = string.Empty;
 
             switch(m_Type)
             {

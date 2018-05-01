@@ -1,10 +1,12 @@
 ﻿namespace Project1
 {
-    class Player
+    internal class Player
     {
         internal int m_Points;
-        string m_Name;
-        int m_id; // 0 if this player is X or K , 1 if this player is U or O
+        internal string m_Name;
+
+        // 0 if this player is X or K , 1 if this player is U or O
+        internal int m_ID; 
         internal CheckersMan.eType m_FirstType;
         internal CheckersMan.eType m_SecondType;
         internal bool m_JustAte;
@@ -14,7 +16,7 @@
         {
             m_Name = i_name;
             m_Points = i_points;
-            m_id = i_id;
+            m_ID = i_id;
             if (i_id == 0)
             {
                 m_FirstType = CheckersMan.eType.X;

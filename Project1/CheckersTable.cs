@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Project1
 {
-    class CheckersTable
+    internal class CheckersTable
     {
         internal int m_Size;
         private int m_NumOfPlayers;
@@ -30,13 +30,13 @@ namespace Project1
             CheckersLogic cLogic = new CheckersLogic(this, i_PlayerTurn);
             if (cLogic.isLegalMove(i_MoveMessage, ref i_PlayerTurn))
             {
-
                 // before performing a move, check if player could perform eat and didnt do it.
                 string check = cLogic.checkIfCanEat(i_MoveMessage);
-                if (!check.Equals("") && !check.Equals(i_MoveMessage) && !cLogic.isEatMove(i_MoveMessage))
+                if (!check.Equals(string.Empty) && !check.Equals(i_MoveMessage) && !cLogic.isEatMove(i_MoveMessage))
                 {
                     punish = true;
                 }
+
                 cLogic.move(i_MoveMessage, i_PlayerTurn, punish);
                 if (punish)
                 {
@@ -48,7 +48,6 @@ namespace Project1
 
             return success;
         }
-
 
         internal CheckerSquare[] GetCheckerSquares(int i_PlayerID)
         {
@@ -73,23 +72,22 @@ namespace Project1
                             cSquare[k++] = m_Table[i, j];
                         }
                     }
-
                 }
             }
 
             return cSquare;
         }
 
-
         private void initTable()
         {
             int numOfMen = calcNumOfMen();
-            m_Table = new CheckerSquare[m_Size,m_Size];
+            m_Table = new CheckerSquare[m_Size, m_Size];
 
             initUpperSide();
+
             // space of 2 lines between the oponnents
             CheckersMan cMan = new CheckersMan(CheckersMan.eType.None);
-            for (int i = ((m_Size - 1) / 2); i < ((m_Size / 2) + 1); i++)
+            for (int i = (m_Size - 1) / 2; i < ((m_Size / 2) + 1); i++)
             {
                 for (int j = 0; j < m_Size; j++)
                 {
@@ -164,6 +162,7 @@ namespace Project1
                 {
                     Console.Write(m_Table[i, j].ToString() + "|");
                 }
+
                 Console.WriteLine();
                 Console.WriteLine(lineSeparator);
             }
@@ -196,13 +195,12 @@ namespace Project1
                 headLine.Append("   ");
             }
 
-
             return headLine.ToString();
         }
 
         private string getColHeadLine()
         {
-            StringBuilder headLine = new StringBuilder("");
+            StringBuilder headLine = new StringBuilder(string.Empty);
             char lineChar = 'a';
             headLine.Append(lineChar);
             headLine.Append(Environment.NewLine + Environment.NewLine);

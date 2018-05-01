@@ -533,8 +533,6 @@ namespace Project1
             return eatMove;
         }
 
-
-
         private string[] getPossibleMovesAfterEat(CheckerSquare i_CurrentSquare)
         {
             string[] possibleMoves;
@@ -566,7 +564,7 @@ namespace Project1
         {
             int id = 0;
             CheckerSquare[] cSquare;
-            string eatMove = "";
+            string eatMove = string.Empty;
 
             if (m_Player.m_FirstType == CheckersMan.eType.K || m_Player.m_FirstType == CheckersMan.eType.X)
             {
@@ -582,7 +580,7 @@ namespace Project1
             for(int i = 0; i < cSquare.Length; i++)
             {
                 eatMove = canEat(cSquare[i]);
-                if (!eatMove.Equals(""))
+                if (!eatMove.Equals(string.Empty))
                 {
                     break;
                 }
@@ -595,8 +593,9 @@ namespace Project1
         {
             int X;
             int Y;
+
             // in this case the square that should be punished moved
-            if (i_MoveMessage.Substring(0,2).Equals(i_EatMessage.Substring(0,2)))
+            if (i_MoveMessage.Substring(0, 2).Equals(i_EatMessage.Substring(0, 2)))
             {
                 X = Convert.ToInt32(i_MoveMessage[4] - 97);
                 Y = Convert.ToInt32(i_MoveMessage[3] - 65);
@@ -616,7 +615,7 @@ namespace Project1
                 m_CheckersTable.m_NumO--;
             }
 
-            Console.WriteLine("square is punished : " + X + " , " +  Y);
+            Console.WriteLine("square is punished : " + X + " , " + Y);
             m_CheckersTable.m_Table[X, Y].free();
         }
 
