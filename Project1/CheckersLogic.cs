@@ -581,35 +581,6 @@ namespace Project1
             return eatMove;
         }
 
-        internal void punish(string i_MoveMessage, string i_EatMessage)
-        {
-            int X;
-            int Y;
-
-            // in this case the square that should be punished moved
-            if (i_MoveMessage.Substring(0, 2).Equals(i_EatMessage.Substring(0, 2)))
-            {
-                X = Convert.ToInt32(i_MoveMessage[4] - 97);
-                Y = Convert.ToInt32(i_MoveMessage[3] - 65);
-            }
-            else
-            {
-                X = Convert.ToInt32(i_EatMessage[1] - 97);
-                Y = Convert.ToInt32(i_EatMessage[0] - 65);
-            }
-
-            if (m_CheckersTable.m_Table[X, Y].m_CheckerMan.m_Type == CheckersMan.eType.K || m_CheckersTable.m_Table[X, Y].m_CheckerMan.m_Type == CheckersMan.eType.X)
-            {
-                m_CheckersTable.m_NumX--;
-            }
-            else
-            {
-                m_CheckersTable.m_NumO--;
-            }
-
-            m_CheckersTable.m_Table[X, Y].free();
-        }
-
         internal bool hasNoLegalMoves(string[] i_PossibleMoves)
         {
             bool hasLegalMove = false;

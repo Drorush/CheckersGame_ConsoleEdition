@@ -37,13 +37,12 @@ namespace Project1
                     punish = true;
                 }
 
-                move(i_MoveMessage, i_PlayerTurn, punish);
-                if (punish)
+                if (!punish)
                 {
-                    cLogic.punish(i_MoveMessage, check);
+                    move(i_MoveMessage, i_PlayerTurn, punish);
                 }
 
-                success = 1;
+                success = punish ? 0 : 1;
             }
 
             return success;
@@ -60,8 +59,6 @@ namespace Project1
             CheckerSquare SquareToFree = null;
 
             // make the move !
-            if (!i_punish)
-            {
                 if (cLogic.isLegalEat(currentSquare, targetSquare, ref SquareToFree))
                 {
                     // perform the eat
@@ -76,8 +73,6 @@ namespace Project1
 
                     SquareToFree.free();
                 }
-            }
-
             if ((targetSquare.m_Posx == 0 || targetSquare.m_Posx == m_Size - 1) && currentSquare.m_CheckerMan.m_Type != CheckersMan.eType.K && currentSquare.m_CheckerMan.m_Type != CheckersMan.eType.U)
             {
                 if (currentSquare.m_CheckerMan.m_Type == CheckersMan.eType.X)
