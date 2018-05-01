@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Project1
 {
@@ -10,11 +7,7 @@ namespace Project1
     {
         internal int m_Size;
         private int m_NumOfPlayers;
-        private int m_NumOfMenFirstPlayer;
-        private int m_NumOfMenSecondPlayer;
         internal CheckerSquare[,] m_Table;
-        internal bool m_GameOver;
-        private string m_Turn;
         internal int m_NumO;
         internal int m_NumX;
 
@@ -44,7 +37,7 @@ namespace Project1
                 {
                     punish = true;
                 }
-                cLogic.move(i_MoveMessage, i_PlayerTurn);
+                cLogic.move(i_MoveMessage, i_PlayerTurn, punish);
                 if (punish)
                 {
                     cLogic.punish(i_MoveMessage, check);
@@ -105,8 +98,6 @@ namespace Project1
             }
                 
             initBottomSide();
-
-
         }
 
         private void initUpperSide()
@@ -159,11 +150,9 @@ namespace Project1
         internal void printTable()
         {
             string lineSeparator = getLineSeparator();
-            string colSeparator = "|";
             string rowHeadline = getRowHeadLine();
             string colHeadline = getColHeadLine();
             char colChar = (char)(Convert.ToInt32('a') - 1);
-
             Console.WriteLine(rowHeadline);
             Console.WriteLine(lineSeparator);
 

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Project1
 {
@@ -21,7 +18,8 @@ namespace Project1
             m_Player = i_Player;
         }
 
-        internal void move(string i_MoveCommand, Player i_Player)
+        // perform a move //
+        internal void move(string i_MoveCommand, Player i_Player, bool i_punish)
         {
             int[] startPoint = getStartPoint(i_MoveCommand);
             int[] endPoint = getEndPoint(i_MoveCommand);
@@ -29,21 +27,22 @@ namespace Project1
             CheckerSquare targetSquare = m_CheckersTable.m_Table[endPoint[0], endPoint[1]];
             CheckerSquare SquareToFree = null;
             // make the move !
-            if (isLegalEat(currentSquare, targetSquare, ref SquareToFree))
+            if (!i_punish)
             {
-                // perform the eat
-                if (SquareToFree.m_CheckerMan.returnType().Equals(" K ") || SquareToFree.m_CheckerMan.returnType().Equals(" X "))
+                if (isLegalEat(currentSquare, targetSquare, ref SquareToFree))
                 {
-                    m_CheckersTable.m_NumX--;
-                    m_Player.m_Points--;
-                }
-                else
-                {
-                    m_CheckersTable.m_NumO--;
-                    m_Player.m_Points--;
-                }
+                    // perform the eat
+                    if (SquareToFree.m_CheckerMan.returnType().Equals(" K ") || SquareToFree.m_CheckerMan.returnType().Equals(" X "))
+                    {
+                        m_CheckersTable.m_NumX--;
+                    }
+                    else
+                    {
+                        m_CheckersTable.m_NumO--;
+                    }
 
-                SquareToFree.free();
+                    SquareToFree.free();
+                }
             }
 
             if (targetSquare.m_Posx == 0 || targetSquare.m_Posx == (m_TableSize - 1) && currentSquare.m_CheckerMan.m_Type != CheckersMan.eType.K && currentSquare.m_CheckerMan.m_Type != CheckersMan.eType.U) // MAKE KING !!
@@ -115,86 +114,76 @@ namespace Project1
         private bool isLegalEatForKings(CheckerSquare i_CurrentSquare, CheckerSquare i_TargetSquare, ref CheckerSquare i_SquareToFree)
         {
             bool isLegalEatForKing = false;
+
             if (i_CurrentSquare.m_CheckerMan.m_Type == CheckersMan.eType.K)
             {
-                if (i_CurrentSquare.m_Posx < m_TableSize - 2) // downside eating with K
+                // check what kind of eat is it
+                if (i_CurrentSquare.m_Posx == i_TargetSquare.m_Posx + 2) // upside eat
                 {
-                    if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy) // eat to the right side
+                    if (i_CurrentSquare.m_Posx > 1)
                     {
-                        isLegalEatForKing = (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1].m_CheckerMan.m_Type == CheckersMan.eType.O
-                            && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 2, i_CurrentSquare.m_Posy + 2].m_CheckerMan.m_Type == CheckersMan.eType.None)
-                         || (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1].m_CheckerMan.m_Type == CheckersMan.eType.U
-                         && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 2, i_CurrentSquare.m_Posy + 2].m_CheckerMan.m_Type == CheckersMan.eType.None);
-                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1];
-                    }
-                    else // down left eating
-                    {
-                        isLegalEatForKing = (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1].m_CheckerMan.m_Type == CheckersMan.eType.O
-                            && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 2, i_CurrentSquare.m_Posy - 2].m_CheckerMan.m_Type == CheckersMan.eType.None)
-                            || (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1].m_CheckerMan.m_Type == CheckersMan.eType.U
-                            && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 2, i_CurrentSquare.m_Posy - 2].m_CheckerMan.m_Type == CheckersMan.eType.None);
-                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1];
+                        if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy) //upsideright
+                        {
+                            isLegalEatForKing = canXEatUpSideRight(i_CurrentSquare, i_TargetSquare);
+                            i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1];
+                        }
+                        else //upside left
+                        {
+                            isLegalEatForKing = canXEatUpSideLeft(i_CurrentSquare, i_TargetSquare);
+                            i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1];
+                        }
                     }
                 }
-
-                if (i_CurrentSquare.m_Posx > 1) // upside eating with K
+                else // downside eat
                 {
-                    if (!isLegalEatForKing && i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy) // if its eat to the right side
+                    if (i_CurrentSquare.m_Posx < m_TableSize - 2)
                     {
-                        isLegalEatForKing = (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1].m_CheckerMan.m_Type == CheckersMan.eType.O
-                            && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 2, i_CurrentSquare.m_Posy + 2].m_CheckerMan.m_Type == CheckersMan.eType.None)
-                            || (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1].m_CheckerMan.m_Type == CheckersMan.eType.U
-                            && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 2, i_CurrentSquare.m_Posy + 2].m_CheckerMan.m_Type == CheckersMan.eType.None);
-                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1];
-                    }
-                    else if (!isLegalEatForKing)// if its eat to the left side
-                    {
-                        isLegalEatForKing = (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1].m_CheckerMan.m_Type == CheckersMan.eType.O
-                            && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 2, i_CurrentSquare.m_Posy - 2].m_CheckerMan.m_Type == CheckersMan.eType.None)
-                          || (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1].m_CheckerMan.m_Type == CheckersMan.eType.U
-                          && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 2, i_CurrentSquare.m_Posy - 2].m_CheckerMan.m_Type == CheckersMan.eType.None);
-                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1];
+                        if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy) //downsideright
+                        {
+                            isLegalEatForKing = canKEatDownSideRight(i_CurrentSquare, i_TargetSquare);
+                            i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1];
+                        }
+                        else // downside left
+                        {
+                            isLegalEatForKing = canKEatDownSideLeft(i_CurrentSquare, i_TargetSquare);
+                            i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1];
+                        }
                     }
                 }
             }
-            else // its U
+            else // U
             {
-                if (i_CurrentSquare.m_Posx > 1) // upside eating with U
+                // check what kind of eat is it
+                if (i_CurrentSquare.m_Posx == i_TargetSquare.m_Posx + 2) // upside eat
                 {
-                    if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy) // eat right
+                    if (i_CurrentSquare.m_Posx > 1)
                     {
-                        isLegalEatForKing = (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1].m_CheckerMan.m_Type == CheckersMan.eType.X
-                            && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 2, i_CurrentSquare.m_Posy + 2].m_CheckerMan.m_Type == CheckersMan.eType.None)
-                                || (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1].m_CheckerMan.m_Type == CheckersMan.eType.K
-                                && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 2, i_CurrentSquare.m_Posy + 2].m_CheckerMan.m_Type == CheckersMan.eType.None);
-                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1];
-                    }
-                    else // eat left
-                    {
-                        isLegalEatForKing = (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1].m_CheckerMan.m_Type == CheckersMan.eType.X
-                            && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 2, i_CurrentSquare.m_Posy - 2].m_CheckerMan.m_Type == CheckersMan.eType.None)
-                            || (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1].m_CheckerMan.m_Type == CheckersMan.eType.K
-                            && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 2, i_CurrentSquare.m_Posy - 2].m_CheckerMan.m_Type == CheckersMan.eType.None);
-                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1];
+                        if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy) //upsideright
+                        {
+                            isLegalEatForKing = canUEatUpSideRight(i_CurrentSquare, i_TargetSquare);
+                            i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1];
+                        }
+                        else //upside left
+                        {
+                            isLegalEatForKing = canUEatUpSideLeft(i_CurrentSquare, i_TargetSquare);
+                            i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1];
+                        }
                     }
                 }
-                if (!isLegalEatForKing && i_CurrentSquare.m_Posx < m_TableSize - 2) // downside eating with U
+                else // downside eat
                 {
-                    if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy) // eat right
+                    if (i_CurrentSquare.m_Posx < m_TableSize - 2)
                     {
-                        isLegalEatForKing = (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1].m_CheckerMan.m_Type == CheckersMan.eType.X
-                            && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 2, i_CurrentSquare.m_Posy + 2].m_CheckerMan.m_Type == CheckersMan.eType.None)
-                                || (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1].m_CheckerMan.m_Type == CheckersMan.eType.K
-                                && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 2, i_CurrentSquare.m_Posy + 2].m_CheckerMan.m_Type == CheckersMan.eType.None);
-                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1];
-                    }
-                    else if (!isLegalEatForKing)// eat left
-                    {
-                        isLegalEatForKing = (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1].m_CheckerMan.m_Type == CheckersMan.eType.X
-                            && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 2, i_CurrentSquare.m_Posy - 2].m_CheckerMan.m_Type == CheckersMan.eType.None)
-                            || (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1].m_CheckerMan.m_Type == CheckersMan.eType.K
-                            && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 2, i_CurrentSquare.m_Posy - 2].m_CheckerMan.m_Type == CheckersMan.eType.None);
-                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1];
+                        if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy) //downsideright
+                        {
+                            isLegalEatForKing = canOEatDownSideRight(i_CurrentSquare, i_TargetSquare);
+                            i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1];
+                        }
+                        else // downside left
+                        {
+                            isLegalEatForKing = canOEatDownSideLeft(i_CurrentSquare, i_TargetSquare);
+                            i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1];
+                        }
                     }
                 }
             }
@@ -202,55 +191,117 @@ namespace Project1
             return isLegalEatForKing;
         }
 
+        private bool canXEatUpSideRight(CheckerSquare i_CurrentSquare, CheckerSquare i_TargetSquare)
+        {
+            bool canEat = (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1].m_CheckerMan.m_Type == CheckersMan.eType.O
+                                || m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1].m_CheckerMan.m_Type == CheckersMan.eType.U)
+                                && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 2, i_CurrentSquare.m_Posy + 2].m_CheckerMan.m_Type == CheckersMan.eType.None;
+            return canEat;
+        }
+
+        private bool canXEatUpSideLeft(CheckerSquare i_CurrentSquare, CheckerSquare i_TargetSquare)
+        {
+            bool canEat = (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1].m_CheckerMan.m_Type == CheckersMan.eType.O
+                                || m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1].m_CheckerMan.m_Type == CheckersMan.eType.U)
+                                && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 2, i_CurrentSquare.m_Posy - 2].m_CheckerMan.m_Type == CheckersMan.eType.None;
+            return canEat;
+        }
+
+        private bool canOEatDownSideRight(CheckerSquare i_CurrentSquare, CheckerSquare i_TargetSquare)
+        {
+            bool canEat = (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1].m_CheckerMan.m_Type == CheckersMan.eType.X
+                                || m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1].m_CheckerMan.m_Type == CheckersMan.eType.K)
+                                && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 2, i_CurrentSquare.m_Posy + 2].m_CheckerMan.m_Type == CheckersMan.eType.None;
+            return canEat;
+        }
+
+        private bool canOEatDownSideLeft(CheckerSquare i_CurrentSquare, CheckerSquare i_TargetSquare)
+        {
+            bool canEat = (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1].m_CheckerMan.m_Type == CheckersMan.eType.X
+                                || m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1].m_CheckerMan.m_Type == CheckersMan.eType.K)
+                                && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 2, i_CurrentSquare.m_Posy - 2].m_CheckerMan.m_Type == CheckersMan.eType.None;
+            return canEat;
+        }
+
+        private bool canKEatDownSideRight(CheckerSquare i_CurrentSquare, CheckerSquare i_TargetSquare)
+        {
+            bool canEat = (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1].m_CheckerMan.m_Type == CheckersMan.eType.O
+                                || m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1].m_CheckerMan.m_Type == CheckersMan.eType.U)
+                                && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 2, i_CurrentSquare.m_Posy + 2].m_CheckerMan.m_Type == CheckersMan.eType.None;
+            return canEat;
+        }
+
+        private bool canKEatDownSideLeft(CheckerSquare i_CurrentSquare, CheckerSquare i_TargetSquare)
+        {
+            bool canEat = (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1].m_CheckerMan.m_Type == CheckersMan.eType.O
+                                || m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1].m_CheckerMan.m_Type == CheckersMan.eType.U)
+                                && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 2, i_CurrentSquare.m_Posy - 2].m_CheckerMan.m_Type == CheckersMan.eType.None;
+            return canEat;
+        }
+
+        private bool canUEatUpSideRight(CheckerSquare i_CurrentSquare, CheckerSquare i_TargetSquare)
+        {
+            bool canEat = (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1].m_CheckerMan.m_Type == CheckersMan.eType.X
+                                || m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1].m_CheckerMan.m_Type == CheckersMan.eType.K)
+                                && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 2, i_CurrentSquare.m_Posy + 2].m_CheckerMan.m_Type == CheckersMan.eType.None;
+            return canEat;
+        }
+
+        private bool canUEatUpSideLeft(CheckerSquare i_CurrentSquare, CheckerSquare i_TargetSquare)
+        {
+            bool canEat = (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1].m_CheckerMan.m_Type == CheckersMan.eType.X
+                                || m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1].m_CheckerMan.m_Type == CheckersMan.eType.K)
+                                && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 2, i_CurrentSquare.m_Posy - 2].m_CheckerMan.m_Type == CheckersMan.eType.None;
+            return canEat;
+        }
+
+
+
+
+
         private bool isLegalEatForMen(CheckerSquare i_CurrentSquare, CheckerSquare i_TargetSquare, ref CheckerSquare i_SquareToFree)
         {
-            bool isLegalEat = false;
-            if (i_CurrentSquare.m_CheckerMan.m_Type == CheckersMan.eType.X) // X
+            bool isLegalForMen = false;
+
+            if (i_CurrentSquare.m_CheckerMan.m_Type == CheckersMan.eType.X)
             {
-                if (i_CurrentSquare.m_Posx > 1) // upside eating
+                // check what kind of eat is it
+                if (i_CurrentSquare.m_Posx == i_TargetSquare.m_Posx + 2) // upside eat
                 {
-                    if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy) // if its eat to the right side
+                    if (i_CurrentSquare.m_Posx > 1)
                     {
-                        isLegalEat = (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1].m_CheckerMan.m_Type == CheckersMan.eType.O
-                            && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 2, i_CurrentSquare.m_Posy + 2].m_CheckerMan.m_Type == CheckersMan.eType.None)
-                            || (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1].m_CheckerMan.m_Type == CheckersMan.eType.U
-                            && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 2, i_CurrentSquare.m_Posy + 2].m_CheckerMan.m_Type == CheckersMan.eType.None);
-                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1];
-                    }
-                    else // if its eat to the left side
-                    {
-                        isLegalEat = (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1].m_CheckerMan.m_Type == CheckersMan.eType.O
-                            && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 2, i_CurrentSquare.m_Posy - 2].m_CheckerMan.m_Type == CheckersMan.eType.None)
-                          || (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1].m_CheckerMan.m_Type == CheckersMan.eType.U
-                          && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 2, i_CurrentSquare.m_Posy - 2].m_CheckerMan.m_Type == CheckersMan.eType.None);
-                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1];
+                        if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy) //upsideright
+                        {
+                            isLegalForMen = canXEatUpSideRight(i_CurrentSquare, i_TargetSquare);
+                            i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1];
+                        }
+                        else //upside left
+                        {
+                            isLegalForMen = canXEatUpSideLeft(i_CurrentSquare, i_TargetSquare);
+                            i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1];
+                        }
                     }
                 }
             }
             else // O
             {
-                if (i_CurrentSquare.m_Posx < m_TableSize - 2) // we are eating down
+                // check what kind of eat is it
+                if (i_CurrentSquare.m_Posx < m_TableSize - 2)
                 {
-                    if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy) // if its eat right
+                    if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy) //downsideright
                     {
-                        isLegalEat = (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1].m_CheckerMan.m_Type == CheckersMan.eType.X
-                            && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 2, i_CurrentSquare.m_Posy + 2].m_CheckerMan.m_Type == CheckersMan.eType.None)
-                                    || (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1].m_CheckerMan.m_Type == CheckersMan.eType.K
-                                    && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 2, i_CurrentSquare.m_Posy + 2].m_CheckerMan.m_Type == CheckersMan.eType.None);
+                        isLegalForMen = canOEatDownSideRight(i_CurrentSquare, i_TargetSquare);
                         i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1];
                     }
-                    else // left eat
+                    else // downside left
                     {
-                        isLegalEat = (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1].m_CheckerMan.m_Type == CheckersMan.eType.X
-                            && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 2, i_CurrentSquare.m_Posy - 2].m_CheckerMan.m_Type == CheckersMan.eType.None)
-                                || (m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1].m_CheckerMan.m_Type == CheckersMan.eType.K
-                                && m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 2, i_CurrentSquare.m_Posy - 2].m_CheckerMan.m_Type == CheckersMan.eType.None);
+                        isLegalForMen = canOEatDownSideLeft(i_CurrentSquare, i_TargetSquare);
                         i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1];
                     }
                 }
             }
 
-            return isLegalEat;
+            return isLegalForMen;
         }
 
         private bool isLegalEat(CheckerSquare i_CurrentSquare, CheckerSquare i_TargetSquare, ref CheckerSquare i_SquareToFree)
@@ -400,11 +451,11 @@ namespace Project1
 
         private string createMoveFromIndices(int startX, int startY, int Endx, int Endy)
         {
-            char currentRowChar = Convert.ToChar((startX + 97));
-            char currentColChar = Convert.ToChar((startY + 65));
-            char targetRowChar = Convert.ToChar((Endx + 97));
-            char targetColChar = Convert.ToChar((Endy + 65));
-            string move = currentColChar + "" + currentRowChar + ">" + targetColChar + targetRowChar;
+            char currentRowChar = Convert.ToChar(startX + 97);
+            char currentColChar = Convert.ToChar(startY + 65);
+            char targetRowChar = Convert.ToChar(Endx + 97);
+            char targetColChar = Convert.ToChar(Endy + 65);
+            string move = currentColChar + string.Empty + currentRowChar + ">" + targetColChar + targetRowChar;
 
             if (!checkRange(move) || !isLegalMove(move, ref m_Player))
             {
@@ -439,9 +490,8 @@ namespace Project1
 
         private string canEat(CheckerSquare i_Square)
         {
-            bool canEat = false;
             string[] possibleMoves = getPossibleMoves(i_Square);
-            string eatMove = "";
+            string eatMove = string.Empty;
             for (int i = 0; i < possibleMoves.Length; i++)
             {
                 int[] startPoint = getStartPoint(possibleMoves[i]);
@@ -454,7 +504,6 @@ namespace Project1
                     if (isLegalEat(currentSquare, targetSquare, ref SquareToFree))
                     {
                         eatMove = possibleMoves[i];
-                        canEat = true;
                         break;
                     }
                 }
@@ -465,9 +514,9 @@ namespace Project1
 
         internal string canEatAfterEat(CheckerSquare i_Square)
         {
-            bool canEat = false;
             string[] possibleMoves = getPossibleMoves(i_Square);
-            string eatMove = "";
+            string eatMove = string.Empty;
+
             for (int i = 0; i < possibleMoves.Length; i++)
             {
                 int[] startPoint = getStartPoint(possibleMoves[i]);
@@ -482,7 +531,6 @@ namespace Project1
                     if (isLegEat || isLegEatAfterEat)
                     {
                         eatMove = possibleMoves[i];
-                        canEat = true;
                         break;
                     }
                 }
@@ -615,6 +663,7 @@ namespace Project1
                 m_CheckersTable.m_NumO--;
             }
 
+            Console.WriteLine("square is punished : " + X + " , " +  Y);
             m_CheckersTable.m_Table[X, Y].free();
         }
 

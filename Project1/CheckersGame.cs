@@ -1,28 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Project1
 {
     // THIS IS THE USER INTERFACE //
-    class CheckersGame
+    internal class CheckersGame
     {
-        string m_EatMove;
-        bool m_CanEatAgain;
-        const int MaxNameLength = 20;
-        const int asciiValOfa = 97;
-        const int asciiValOfA = 65;
-        const int MoveLength = 5;
+        private const int MaxNameLength = 20;
+        private const int asciiValOfa = 97;
+        private const int asciiValOfA = 65;
+        private const int MoveLength = 5;
+        private string m_EatMove;
+        private bool m_CanEatAgain;
         internal Player m_PlayerOne;
         internal Player m_PlayerTwo;
         private string m_FirstUserName; // X player
-        private string m_SecondUserName;// O player
+        private string m_SecondUserName; // O player
         private int m_NumOfPlayers;
         private int m_TableSize;
         private CheckersTable m_Table;
-        internal string m_turn;
+        internal string m_Turn;
 
         public void StartGame()
         {
@@ -65,10 +62,10 @@ namespace Project1
             string[] moveMessages;
 
             // play the game till its over
-            while (!m_Table.m_GameOver)
+            while (true)
             {
                 CheckersLogic logic = new CheckersLogic(m_Table, getPlayerById(playerIdTurn));
-                Console.WriteLine(m_turn + " turn:");
+                Console.WriteLine(m_turn + " turn " + getMoveType(playerIdTurn) + ":");
                 // if first player can eat again, we give him another turn
                 if (m_CanEatAgain && playerIdTurn == 0)
                 {
@@ -134,8 +131,9 @@ namespace Project1
                     {
                         // made a move , clear the screen
                         Ex02.ConsoleUtils.Screen.Clear();
+                        Console.WriteLine("\n");
                         m_Table.printTable(); // print state after the move
-                        Console.WriteLine(m_turn + " move was: " + moveMessage);
+                        Console.WriteLine(m_turn  + " move was: " + getMoveType(playerIdTurn) + ": " + moveMessage);
                         //checks if move was eatmove
                         if (logic.isEatMove(moveMessage))
                         {
@@ -176,6 +174,13 @@ namespace Project1
             Console.WriteLine("Player one has now " + m_PlayerOne.m_TotalPoints + " points");
             Console.WriteLine("Player two has now " + m_PlayerTwo.m_TotalPoints + " points");
             checkIfPlayAgain();
+        }
+
+        private string getMoveType(int i_id)
+        {
+            string moveType = (i_id == 0) ? "(X)" : "(O)";
+
+            return moveType;
         }
 
         private void checkIfPlayAgain()
