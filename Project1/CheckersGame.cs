@@ -55,9 +55,10 @@ namespace Project1
         {
             bool hasNoLegalMoves = false;
             bool surrender = false;
+            
             // we start with X player
             int playerIdTurn = 0;
-            string moveMessage = "";
+            string moveMessage = string.Empty;
             CheckerSquare[] cSquare;
             string[] moveMessages;
 
@@ -66,7 +67,8 @@ namespace Project1
             {
                 CheckersLogic logic = new CheckersLogic(m_Table, getPlayerById(playerIdTurn));
                 Console.WriteLine(M_Turn + " turn " + getMoveType(playerIdTurn) + ":");
-                // if first player can eat again, we give him another turn
+
+                //// if first player can eat again, we give him another turn
                 if (m_CanEatAgain && playerIdTurn == 0)
                 {
                     m_CanEatAgain = false;
@@ -94,18 +96,23 @@ namespace Project1
                         }
                         else
                         {
-                            string eat = "";
-                            while (moveMessage.Equals("Aa>Aa")) // filter the non-legal moves
+                            string eat = string.Empty;
+
+                            // filter the non-legal moves
+                            while (moveMessage.Equals("Aa>Aa")) 
                             {
                                 moveMessage = moveMessages[random.Next(moveMessages.Length)];
                             }
+
                             eat = logic.checkIfCanEat(moveMessage);
-                            moveMessage = eat.Equals("") ? moveMessage : eat; // prefer the eating move
+
+                            // prefer the eating move
+                            moveMessage = eat.Equals(string.Empty) ? moveMessage : eat;
                         }
                     }
-                    // player's (non-computer) turn
                     else
                     {
+                        // player's (non-computer) turn
                         cSquare = m_Table.GetCheckerSquares(playerIdTurn);
                         moveMessages = logic.getPossibleMovesForPlayer(ref cSquare);
                         hasNoLegalMoves = logic.hasNoLegalMoves(moveMessages);
@@ -115,7 +122,9 @@ namespace Project1
                         }
 
                         moveMessage = getLegalMoveMessage(playerIdTurn);
-                        if (moveMessage.Equals("Q")) // if players wants and can quit
+
+                        // if players wants and can quit
+                        if (moveMessage.Equals("Q")) 
                         {
                             surrender = true;
                             break;
@@ -129,24 +138,27 @@ namespace Project1
                     }
                     else
                     {
-                        // made a move , clear the screen
+                        // made a move, clear the screen
                         Ex02.ConsoleUtils.Screen.Clear();
-                        Console.WriteLine("\n");
-                        m_Table.printTable(); // print state after the move
+
+                        // print state after the move
+                        m_Table.printTable(); 
                         Console.WriteLine(M_Turn  + " move was: " + getMoveType(playerIdTurn) + ": " + moveMessage);
-                        //checks if move was eatmove
+
+                        // checks if move was eatmove
                         if (logic.isEatMove(moveMessage))
                         {
                             logic.m_Player.m_JustAte = true;
+
                             // checks if the player can eat again, if he can, camEat will hold the new move
                             string canEat = logic.canEatAgain(moveMessage);
-                            if (canEat.Equals(""))
+                            if (canEat.Equals(string.Empty))
                             {
                                 // if he cant eat anymore, just switch turns
                                 logic.m_Player.m_JustAte = false;
                                 switchTurn(ref playerIdTurn);
                                 m_CanEatAgain = false;
-                                m_EatMove = "";
+                                m_EatMove = string.Empty;
                             }
                             else
                             {
@@ -154,14 +166,14 @@ namespace Project1
                                 m_EatMove = canEat;
                             }
                         }
-                        // if it wasnt eatmove, checks if he could eat someone and didnt do it, if so he lose man
                         else
                         {
+                            // if it wasnt eatmove, checks if he could eat someone and didnt do it, if so he lose man
                             switchTurn(ref playerIdTurn);
                         }
-
                     }
                 }
+
                 if (m_Table.m_NumO == 0 || m_Table.m_NumX == 0 || surrender || hasNoLegalMoves)
                 {
                     Console.WriteLine("GAME OVER !");

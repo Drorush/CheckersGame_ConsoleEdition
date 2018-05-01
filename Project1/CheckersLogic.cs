@@ -118,16 +118,16 @@ namespace Project1
             if (i_CurrentSquare.m_CheckerMan.m_Type == CheckersMan.eType.K)
             {
                 // check what kind of eat is it
-                if (i_CurrentSquare.m_Posx == i_TargetSquare.m_Posx + 2) // upside eat
+                if (i_CurrentSquare.m_Posx == i_TargetSquare.m_Posx + 2)
                 {
                     if (i_CurrentSquare.m_Posx > 1)
                     {
-                        if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy) //upsideright
+                        if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy < m_TableSize - 2)
                         {
                             isLegalEatForKing = canXEatUpSideRight(i_CurrentSquare, i_TargetSquare);
                             i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1];
                         }
-                        else //upside left
+                        else if (i_CurrentSquare.m_Posy > i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy > 1)
                         {
                             isLegalEatForKing = canXEatUpSideLeft(i_CurrentSquare, i_TargetSquare);
                             i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1];
@@ -138,12 +138,12 @@ namespace Project1
                 {
                     if (i_CurrentSquare.m_Posx < m_TableSize - 2)
                     {
-                        if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy) //downsideright
+                        if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy < m_TableSize - 2)
                         {
                             isLegalEatForKing = canKEatDownSideRight(i_CurrentSquare, i_TargetSquare);
                             i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1];
                         }
-                        else // downside left
+                        else if (i_CurrentSquare.m_Posy > i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy > 1)
                         {
                             isLegalEatForKing = canKEatDownSideLeft(i_CurrentSquare, i_TargetSquare);
                             i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1];
@@ -158,12 +158,12 @@ namespace Project1
                 {
                     if (i_CurrentSquare.m_Posx > 1)
                     {
-                        if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy) //upsideright
+                        if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy < m_TableSize - 2) //upsideright
                         {
                             isLegalEatForKing = canUEatUpSideRight(i_CurrentSquare, i_TargetSquare);
                             i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1];
                         }
-                        else //upside left
+                        else if (i_CurrentSquare.m_Posy > i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy > 1) 
                         {
                             isLegalEatForKing = canUEatUpSideLeft(i_CurrentSquare, i_TargetSquare);
                             i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1];
@@ -174,13 +174,12 @@ namespace Project1
                 {
                     if (i_CurrentSquare.m_Posx < m_TableSize - 2)
                     {
-                        if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy) //downsideright
+                        if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy < m_TableSize - 2) //downsideright
                         {
                             isLegalEatForKing = canOEatDownSideRight(i_CurrentSquare, i_TargetSquare);
                             i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1];
                         }
-                        else // downside left
-                        {
+                        else if (i_CurrentSquare.m_Posy > i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy > 1)                        {
                             isLegalEatForKing = canOEatDownSideLeft(i_CurrentSquare, i_TargetSquare);
                             i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1];
                         }
@@ -270,12 +269,12 @@ namespace Project1
                 {
                     if (i_CurrentSquare.m_Posx > 1)
                     {
-                        if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy) //upsideright
+                        if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy < m_TableSize - 2) //upsideright
                         {
                             isLegalForMen = canXEatUpSideRight(i_CurrentSquare, i_TargetSquare);
                             i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1];
                         }
-                        else //upside left
+                        else if (i_CurrentSquare.m_Posy > i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy > 1) //upside left
                         {
                             isLegalForMen = canXEatUpSideLeft(i_CurrentSquare, i_TargetSquare);
                             i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1];
@@ -288,12 +287,12 @@ namespace Project1
                 // check what kind of eat is it
                 if (i_CurrentSquare.m_Posx < m_TableSize - 2)
                 {
-                    if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy) //downsideright
+                    if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy < m_TableSize - 2) //downsideright
                     {
                         isLegalForMen = canOEatDownSideRight(i_CurrentSquare, i_TargetSquare);
                         i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1];
                     }
-                    else // downside left
+                    else if (i_CurrentSquare.m_Posy > i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy > 1)
                     {
                         isLegalForMen = canOEatDownSideLeft(i_CurrentSquare, i_TargetSquare);
                         i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1];
