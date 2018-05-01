@@ -263,37 +263,55 @@ namespace Project1
 
             if (i_CurrentSquare.m_CheckerMan.m_Type == CheckersMan.eType.X)
             {
-                if (i_CurrentSquare.m_Posx == i_TargetSquare.m_Posx + 2)
-                {
-                    if (i_CurrentSquare.m_Posx > 1)
-                    {
-                        if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy < m_TableSize - 2)
-                        {
-                            isLegalForMen = canXEatUpSideRight(i_CurrentSquare, i_TargetSquare);
-                            i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1];
-                        }
-                        else if (i_CurrentSquare.m_Posy > i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy > 1)
-                        {
-                            isLegalForMen = canXEatUpSideLeft(i_CurrentSquare, i_TargetSquare);
-                            i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1];
-                        }
-                    }
-                }
+                isLegalForMen = isLegalEatForX(i_CurrentSquare, i_TargetSquare, ref i_SquareToFree);
             }
             else
             {
-                if (i_CurrentSquare.m_Posx < m_TableSize - 2)
+                isLegalForMen = isLegalEatForO(i_CurrentSquare, i_TargetSquare, ref i_SquareToFree);
+            }
+
+            return isLegalForMen;
+        }
+
+        private bool isLegalEatForX(CheckerSquare i_CurrentSquare, CheckerSquare i_TargetSquare, ref CheckerSquare i_SquareToFree)
+        {
+            bool isLegalForMen = false;
+
+            if (i_CurrentSquare.m_Posx == i_TargetSquare.m_Posx + 2)
+            {
+                if (i_CurrentSquare.m_Posx > 1)
                 {
                     if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy < m_TableSize - 2)
                     {
-                        isLegalForMen = canOEatDownSideRight(i_CurrentSquare, i_TargetSquare);
-                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1];
+                        isLegalForMen = canXEatUpSideRight(i_CurrentSquare, i_TargetSquare);
+                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy + 1];
                     }
                     else if (i_CurrentSquare.m_Posy > i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy > 1)
                     {
-                        isLegalForMen = canOEatDownSideLeft(i_CurrentSquare, i_TargetSquare);
-                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1];
+                        isLegalForMen = canXEatUpSideLeft(i_CurrentSquare, i_TargetSquare);
+                        i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx - 1, i_CurrentSquare.m_Posy - 1];
                     }
+                }
+            }
+
+            return isLegalForMen;
+        }
+
+        private bool isLegalEatForO(CheckerSquare i_CurrentSquare, CheckerSquare i_TargetSquare, ref CheckerSquare i_SquareToFree)
+        {
+            bool isLegalForMen = false;
+
+            if (i_CurrentSquare.m_Posx < m_TableSize - 2)
+            {
+                if (i_CurrentSquare.m_Posy < i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy < m_TableSize - 2)
+                {
+                    isLegalForMen = canOEatDownSideRight(i_CurrentSquare, i_TargetSquare);
+                    i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy + 1];
+                }
+                else if (i_CurrentSquare.m_Posy > i_TargetSquare.m_Posy && i_CurrentSquare.m_Posy > 1)
+                {
+                    isLegalForMen = canOEatDownSideLeft(i_CurrentSquare, i_TargetSquare);
+                    i_SquareToFree = m_CheckersTable.m_Table[i_CurrentSquare.m_Posx + 1, i_CurrentSquare.m_Posy - 1];
                 }
             }
 
@@ -615,7 +633,6 @@ namespace Project1
                 m_CheckersTable.m_NumO--;
             }
 
-            Console.WriteLine("square is punished : " + X + " , " + Y);
             m_CheckersTable.m_Table[X, Y].free();
         }
 

@@ -56,7 +56,7 @@ namespace Project1
         {
             bool hasNoLegalMoves = false;
             bool surrender = false;
-            
+
             // we start with X player
             int playerIdTurn = 0;
             string moveMessage = string.Empty;
@@ -67,7 +67,6 @@ namespace Project1
             while (true)
             {
                 CheckersLogic logic = new CheckersLogic(m_Table, getPlayerById(playerIdTurn));
-                Console.WriteLine(m_Turn + " turn " + getMoveType(playerIdTurn) + ":");
 
                 //// if first player can eat again, we give him another turn
                 if (m_CanEatAgain && playerIdTurn == 0)
@@ -76,6 +75,8 @@ namespace Project1
                 }
                 else
                 {
+                    Console.WriteLine(m_Turn + " turn " + getMoveType(playerIdTurn) + ":");
+
                     // if we are playing against the computer
                     if (m_Turn.Equals("Computer\'s"))
                     {
@@ -100,7 +101,7 @@ namespace Project1
                             string eat = string.Empty;
 
                             // filter the non-legal moves
-                            while (moveMessage.Equals("Aa>Aa")) 
+                            while (moveMessage.Equals("Aa>Aa"))
                             {
                                 moveMessage = moveMessages[random.Next(moveMessages.Length)];
                             }
@@ -125,7 +126,7 @@ namespace Project1
                         moveMessage = getLegalMoveMessage(playerIdTurn);
 
                         // if players wants and can quit
-                        if (moveMessage.Equals("Q")) 
+                        if (moveMessage.Equals("Q"))
                         {
                             surrender = true;
                             break;
@@ -143,8 +144,8 @@ namespace Project1
                         Ex02.ConsoleUtils.Screen.Clear();
 
                         // print state after the move
-                        m_Table.printTable(); 
-                        Console.WriteLine(m_Turn  + " move was: " + getMoveType(playerIdTurn) + ": " + moveMessage);
+                        m_Table.printTable();
+                        Console.WriteLine(m_Turn + " move was: " + getMoveType(playerIdTurn) + ": " + moveMessage);
 
                         // checks if move was eatmove
                         if (logic.isEatMove(moveMessage))
@@ -184,9 +185,14 @@ namespace Project1
 
             // something got us out of the game, check what happend
             calculatePointsAfterGame();
+            printResults();
+            checkIfPlayAgain();
+        }
+
+        private void printResults()
+        {
             Console.WriteLine(m_PlayerOne.m_Name + " has now " + m_PlayerOne.m_TotalPoints + " points");
             Console.WriteLine(m_PlayerTwo.m_Name + " has now " + m_PlayerTwo.m_TotalPoints + " points");
-            checkIfPlayAgain();
         }
 
         private string getMoveType(int i_id)
@@ -392,8 +398,6 @@ namespace Project1
             bool canQuit = false;
             if (i_id == 0)
             {
-                Console.WriteLine(m_Table.m_NumX <= m_Table.m_NumO);
-                Console.WriteLine(m_Table.m_NumX + ", " + m_Table.m_NumO);
                 canQuit = m_Table.m_NumX <= m_Table.m_NumO;
             }
             else
